@@ -1,2 +1,2 @@
-include 'domain'
-
+rootProject.name = 'JournowDesktop'
+include ':domain'
