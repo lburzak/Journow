@@ -12,4 +12,16 @@ public class Session {
         this.endedAt = endedAt;
         this.task = task;
     }
+
+    public Instant getStartedAt() {
+        return startedAt;
+    }
+
+    public Instant getEndedAt() {
+        return endedAt;
+    }
+
+    public Task getTask() {
+        return task;
+    }
 }
