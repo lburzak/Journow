@@ -1,4 +1,5 @@
 rootProject.name = 'JournowDesktop'
 include ':domain'
 include 'time-date-parser'
+include 'ui'
 
