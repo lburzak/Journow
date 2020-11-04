@@ -19,19 +19,23 @@ public class TimeParser {
         double value;
 
         while (matcher.find()) {
-            match = matcher.group("hours");
-            if (match != null) {
-                value = Float.parseFloat(match.substring(0, matcher.group().length() - 1));
-                result += TimeUnit.HOURS.toMillis((long) value)
-                        + Math.round(TimeUnit.HOURS.toMillis(1) * (value - ((long) value)));
+            match = matcher.group();
+            TimeUnit timeUnit;
+
+            switch (Character.toLowerCase(match.charAt(match.length() - 1))) {
+                case 'm':
+                    timeUnit = TimeUnit.MINUTES;
+                    break;
+                case 'h':
+                    timeUnit = TimeUnit.HOURS;
+                    break;
+                default:
+                    throw new RuntimeException("Unimplemented identifier");
             }
 
-            match = matcher.group("minutes");
-            if (match != null) {
-                value = Float.parseFloat(match.substring(0, matcher.group().length() - 1));
-                result += TimeUnit.MINUTES.toMillis((long) value)
-                        + Math.round(TimeUnit.MINUTES.toMillis(1) * (value - ((long) value)));
-            }
+            value = Float.parseFloat(match.substring(0, matcher.group().length() - 1));
+            result += timeUnit.toMillis((long) value)
+                    + Math.round(timeUnit.toMillis(1) * (value - ((long) value)));
         }
 
         if (result == 0)
