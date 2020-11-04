@@ -26,7 +26,7 @@ class TimeParserTest {
     }
 
     @Test
-    public void parseDuration_2h_returnsMilliseconds() {
+    public void parseDuration_hours_returnsMilliseconds() {
         Optional<Long> duration = SUT.parseDuration("2h");
 
         assertThat(duration.isPresent(), equalTo(true));
@@ -34,7 +34,7 @@ class TimeParserTest {
     }
 
     @Test
-    public void parseDuration_37h_returnsMilliseconds() {
+    public void parseDuration_hoursLarge_returnsMilliseconds() {
         Optional<Long> duration = SUT.parseDuration("37h");
 
         assertThat(duration.isPresent(), equalTo(true));
@@ -42,7 +42,7 @@ class TimeParserTest {
     }
 
     @Test
-    public void parseDuration_37dot3h_returnsMilliseconds() {
+    public void parseDuration_hoursFractional_returnsMilliseconds() {
         Optional<Long> duration = SUT.parseDuration("37.3h");
 
         assertThat(duration.isPresent(), equalTo(true));
@@ -51,7 +51,7 @@ class TimeParserTest {
     }
 
     @Test
-    public void parseDuration_12m_returnsMilliseconds() {
+    public void parseDuration_minutes_returnsMilliseconds() {
         Optional<Long> duration = SUT.parseDuration("12m");
 
         assertThat(duration.isPresent(), equalTo(true));
@@ -60,7 +60,7 @@ class TimeParserTest {
     }
 
     @Test
-    public void parseDuration_85m_returnsMilliseconds() {
+    public void parseDuration_minutesLarge_returnsMilliseconds() {
         Optional<Long> duration = SUT.parseDuration("85m");
 
         assertThat(duration.isPresent(), equalTo(true));
@@ -69,7 +69,7 @@ class TimeParserTest {
     }
 
     @Test
-    public void parseDuration_85_16m_returnsMilliseconds() {
+    public void parseDuration_minutesFractional_returnsMilliseconds() {
         Optional<Long> duration = SUT.parseDuration("85.16m");
 
         assertThat(duration.isPresent(), equalTo(true));
@@ -78,7 +78,7 @@ class TimeParserTest {
     }
 
     @Test
-    public void parseDuration_85_16m_15_875h_returnsMilliseconds() {
+    public void parseDuration_mixedStatementsFractional_returnsMilliseconds() {
         Optional<Long> duration = SUT.parseDuration("85.16m 15.875h");
 
         assertThat(duration.isPresent(), equalTo(true));
@@ -87,7 +87,7 @@ class TimeParserTest {
     }
 
     @Test
-    public void parseDuration_multipleStatements_returnsMilliseconds() {
+    public void parseDuration_mixedMultipleStatements_returnsMilliseconds() {
         Optional<Long> duration = SUT.parseDuration("85.16m 15.875h 12m");
 
         assertThat(duration.isPresent(), equalTo(true));
