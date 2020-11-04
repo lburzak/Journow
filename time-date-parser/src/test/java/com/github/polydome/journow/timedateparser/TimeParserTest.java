@@ -16,6 +16,7 @@ class TimeParserTest {
     final int SECONDS_IN_MINUTE = 60;
     final int MILLISECONDS_IN_SECOND = 1000;
     final int MILLISECONDS_IN_HOUR = MINUTES_IN_HOUR * SECONDS_IN_MINUTE * MILLISECONDS_IN_SECOND;
+    final int MILLISECONDS_IN_MINUTE =  SECONDS_IN_MINUTE * MILLISECONDS_IN_SECOND;
 
     @Test
     public void parseDuration_emptyString_returnsEmpty() {
@@ -47,6 +48,55 @@ class TimeParserTest {
         assertThat(duration.isPresent(), equalTo(true));
 
         assertWithinAcceptableDifference((long) (37.3 * MILLISECONDS_IN_HOUR), duration.get());
+    }
+
+    @Test
+    public void parseDuration_12m_returnsMilliseconds() {
+        Optional<Long> duration = SUT.parseDuration("12m");
+
+        assertThat(duration.isPresent(), equalTo(true));
+
+        assertThat(duration.get(), equalTo((12L * MILLISECONDS_IN_MINUTE)));
+    }
+
+    @Test
+    public void parseDuration_85m_returnsMilliseconds() {
+        Optional<Long> duration = SUT.parseDuration("85m");
+
+        assertThat(duration.isPresent(), equalTo(true));
+
+        assertThat(duration.get(), equalTo((85L * MILLISECONDS_IN_MINUTE)));
+    }
+
+    @Test
+    public void parseDuration_85_16m_returnsMilliseconds() {
+        Optional<Long> duration = SUT.parseDuration("85.16m");
+
+        assertThat(duration.isPresent(), equalTo(true));
+
+        assertWithinAcceptableDifference((long) (85.16 * MILLISECONDS_IN_MINUTE), duration.get());
+    }
+
+    @Test
+    public void parseDuration_85_16m_15_875h_returnsMilliseconds() {
+        Optional<Long> duration = SUT.parseDuration("85.16m 15.875h");
+
+        assertThat(duration.isPresent(), equalTo(true));
+
+        assertWithinAcceptableDifference(((long) (85.16 * MILLISECONDS_IN_MINUTE)) + ((long) (15.875 * MILLISECONDS_IN_HOUR)), duration.get());
+    }
+
+    @Test
+    public void parseDuration_multipleStatements_returnsMilliseconds() {
+        Optional<Long> duration = SUT.parseDuration("85.16m 15.875h 12m");
+
+        assertThat(duration.isPresent(), equalTo(true));
+
+        assertWithinAcceptableDifference(
+                ((long) (85.16 * MILLISECONDS_IN_MINUTE))
+                + ((long) (15.875 * MILLISECONDS_IN_HOUR))
+                + ((long) (12 * MILLISECONDS_IN_MINUTE))
+        , duration.get());
     }
 
     private void assertWithinAcceptableDifference(long a, long b) {
