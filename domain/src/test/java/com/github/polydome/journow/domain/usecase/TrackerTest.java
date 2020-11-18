@@ -1,5 +1,6 @@
 package com.github.polydome.journow.domain.usecase;
 
+import com.github.polydome.journow.domain.controller.Tracker;
 import com.github.polydome.journow.domain.exception.NoSuchTaskException;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.model.TrackerData;
@@ -21,25 +22,25 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
-public class StartTrackerUseCaseTest {
+public class TrackerTest {
     TaskRepository taskRepository = Mockito.mock(TaskRepository.class);
     TrackerDataStorage trackerDataStorage = Mockito.mock(TrackerDataStorage.class);
     Clock clock = Mockito.mock(Clock.class);
-    StartTrackerUseCase SUT = new StartTrackerUseCase(taskRepository, trackerDataStorage, clock);
+    Tracker SUT = new Tracker(taskRepository, trackerDataStorage, clock);
 
     @Test
-    public void execute_taskNotExists_throwsNoSuchTaskException() {
+    public void start_taskNotExists_throwsNoSuchTaskException() {
         long TASK_ID = 15;
         Mockito.when(taskRepository.findById(TASK_ID)).thenReturn(Optional.empty());
 
         NoSuchTaskException exception = assertThrows(NoSuchTaskException.class, () ->
-                SUT.execute(TASK_ID));
+                SUT.start(TASK_ID));
 
         assertThat(exception.getMessage(), equalTo(String.format("Task identified with [id=%d] does not exist", TASK_ID)));
     }
 
     @Test
-    public void execute_taskExists_savesData() {
+    public void start_taskExists_savesData() {
         // given
         Instant now = Instant.ofEpochMilli(12000000);
         long TASK_ID = 15;
@@ -47,7 +48,7 @@ public class StartTrackerUseCaseTest {
         when(taskRepository.findById(TASK_ID)).thenReturn(Optional.of(new Task(TASK_ID, "test task")));
 
         // when
-        SUT.execute(TASK_ID);
+        SUT.start(TASK_ID);
 
         // then
         ArgumentCaptor<TrackerData> dataCpt = ArgumentCaptor.forClass(TrackerData.class);
