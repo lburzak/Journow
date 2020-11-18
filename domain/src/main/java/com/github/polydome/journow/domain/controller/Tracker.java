@@ -1,6 +1,7 @@
 package com.github.polydome.journow.domain.controller;
 
 import com.github.polydome.journow.domain.exception.NoSuchTaskException;
+import com.github.polydome.journow.domain.exception.TrackerNotRunningException;
 import com.github.polydome.journow.domain.model.Session;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.model.TrackerData;
@@ -10,6 +11,7 @@ import com.github.polydome.journow.domain.service.TrackerDataStorage;
 
 import java.time.Clock;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class Tracker {
     private final TaskRepository taskRepository;
@@ -34,10 +36,15 @@ public class Tracker {
     }
 
     public void stop() {
-        TrackerData data = dataStorage.read();
-        Optional<Task> task = taskRepository.findById(data.getTaskId());
+        Optional<TrackerData> data = dataStorage.read();
 
-        sessionRepository.insert(new Session(data.getStartTime(), clock.instant(), task.orElse(null)));
-        dataStorage.clear();
+        if (data.isEmpty())
+            throw new TrackerNotRunningException();
+        else {
+            Optional<Task> task = taskRepository.findById(data.get().getTaskId());
+
+            sessionRepository.insert(new Session(data.get().getStartTime(), clock.instant(), task.orElse(null)));
+            dataStorage.clear();
+        }
     }
 }

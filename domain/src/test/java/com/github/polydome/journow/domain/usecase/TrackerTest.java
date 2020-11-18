@@ -2,6 +2,7 @@ package com.github.polydome.journow.domain.usecase;
 
 import com.github.polydome.journow.domain.controller.Tracker;
 import com.github.polydome.journow.domain.exception.NoSuchTaskException;
+import com.github.polydome.journow.domain.exception.TrackerNotRunningException;
 import com.github.polydome.journow.domain.model.Session;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.model.TrackerData;
@@ -69,7 +70,7 @@ public class TrackerTest {
         Instant now = Instant.ofEpochMilli(12000000);
         Task task = new Task(15, "test task");
         when(clock.instant()).thenReturn(now);
-        when(trackerDataStorage.read()).thenReturn(new TrackerData(task.getId(), start));
+        when(trackerDataStorage.read()).thenReturn(Optional.of(new TrackerData(task.getId(), start)));
         when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
 
         // when
@@ -89,7 +90,7 @@ public class TrackerTest {
     @Test
     public void stop_trackerRunning_clearsData() {
         Task task = new Task(15, "test task");
-        when(trackerDataStorage.read()).thenReturn(new TrackerData(task.getId(), Instant.ofEpochMilli(233)));
+        when(trackerDataStorage.read()).thenReturn(Optional.of(new TrackerData(task.getId(), Instant.ofEpochMilli(233))));
         when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
 
         SUT.stop();
@@ -104,7 +105,7 @@ public class TrackerTest {
         Instant now = Instant.ofEpochMilli(12000000);
         long TASK_ID = 15;
         when(clock.instant()).thenReturn(now);
-        when(trackerDataStorage.read()).thenReturn(new TrackerData(TASK_ID, start));
+        when(trackerDataStorage.read()).thenReturn(Optional.of(new TrackerData(TASK_ID, start)));
         when(taskRepository.findById(TASK_ID)).thenReturn(Optional.empty());
 
         // when
@@ -119,5 +120,12 @@ public class TrackerTest {
         assertThat(actual.getStartedAt(), equalTo(start));
         assertThat(actual.getEndedAt(), equalTo(now));
         assertThat(actual.getTask(), equalTo(null));
+    }
+
+    @Test
+    public void stop_dataEmpty_throwsTrackerNotRunningException() {
+        when(trackerDataStorage.read()).thenReturn(Optional.empty());
+
+        assertThrows(TrackerNotRunningException.class, () -> SUT.stop());
     }
 }
