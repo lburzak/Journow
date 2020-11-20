@@ -8,16 +8,19 @@ import com.github.polydome.journow.domain.model.TrackerData;
 import com.github.polydome.journow.domain.repository.SessionRepository;
 import com.github.polydome.journow.domain.repository.TaskRepository;
 import com.github.polydome.journow.domain.service.TrackerDataStorage;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import io.reactivex.rxjava3.subjects.Subject;
 
 import java.time.Clock;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 public class Tracker {
     private final TaskRepository taskRepository;
     private final TrackerDataStorage dataStorage;
     private final Clock clock;
     private final SessionRepository sessionRepository;
+    private final Subject<Task> _currentTask = BehaviorSubject.create();
 
     public Tracker(TaskRepository taskRepository, TrackerDataStorage dataStorage, Clock clock, SessionRepository sessionRepository) {
         this.taskRepository = taskRepository;
@@ -32,6 +35,7 @@ public class Tracker {
         if (task.isEmpty())
             throw new NoSuchTaskException(taskId);
 
+        _currentTask.onNext(task.get());
         dataStorage.save(new TrackerData(taskId, clock.instant()));
     }
 
@@ -46,5 +50,9 @@ public class Tracker {
             sessionRepository.insert(new Session(data.get().getStartTime(), clock.instant(), task.orElse(null)));
             dataStorage.clear();
         }
+    }
+
+    public Observable<Task> currentTask() {
+        return _currentTask.toSerialized();
     }
 }

@@ -128,4 +128,24 @@ public class TrackerTest {
 
         assertThrows(TrackerNotRunningException.class, () -> SUT.stop());
     }
+
+    @Test
+    public void currentTask_trackerNotStarted_emitsNothing() {
+        SUT.currentTask().test().assertEmpty();
+    }
+
+    @Test
+    public void currentTask_trackerStarted_emitsStartedTask() {
+        // given
+        Instant now = Instant.ofEpochMilli(12000000);
+        Task task = new Task(15, "test task");
+        when(clock.instant()).thenReturn(now);
+        when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
+
+        // when
+        SUT.start(task.getId());
+
+        // then
+        SUT.currentTask().test().assertValue(task);
+    }
 }
