@@ -15,6 +15,6 @@ public class Main {
             e.printStackTrace();
         }
 
-        new LogTimeWindow();
+        new TrackerWindow();
     }
 }
