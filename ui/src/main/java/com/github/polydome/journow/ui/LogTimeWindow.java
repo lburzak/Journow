@@ -8,9 +8,6 @@ public class LogTimeWindow extends JFrame {
         setTitle("Journow - Log time");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Enable Anti-aliasing
-        System.setProperty("awt.useSystemAAFontSettings", "lcd");
-
         // Center window on screen
         setLocationRelativeTo(null);
 
