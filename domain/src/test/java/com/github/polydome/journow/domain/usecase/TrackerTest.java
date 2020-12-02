@@ -9,6 +9,8 @@ import com.github.polydome.journow.domain.model.TrackerData;
 import com.github.polydome.journow.domain.repository.SessionRepository;
 import com.github.polydome.journow.domain.repository.TaskRepository;
 import com.github.polydome.journow.domain.service.TrackerDataStorage;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.observers.TestObserver;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.ArgumentCaptor;
@@ -17,6 +19,7 @@ import org.mockito.Mockito;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -147,5 +150,40 @@ public class TrackerTest {
 
         // then
         SUT.currentTask().test().assertValue(task);
+    }
+
+    @Test
+    public void timeElapsed_trackerStarted_emits0Immediately() {
+        // given
+        Instant now = Instant.ofEpochMilli(12000000);
+        Task task = new Task(15, "test task");
+        when(clock.instant()).thenReturn(now);
+        when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
+
+        // when
+        SUT.start(task.getId());
+
+        // then
+        SUT.timeElapsed(Observable.fromArray(0L, 100L, 200L)).test().assertValue(0L);
+    }
+
+    @Test
+    void timeElapsed_trackerStarted_emitsMillisecondsElapsedWithinAcceptableRange() {
+        // given
+        Instant start = Instant.now();
+        Instant firstTick = start.plusMillis(600);
+        Instant secondTick = start.plusMillis(700);
+        Task task = new Task(15, "test task");
+
+        when(clock.instant()).thenReturn(start, firstTick, secondTick);
+        when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
+        when(trackerDataStorage.read()).thenReturn(Optional.of(new TrackerData(task.getId(), start)));
+
+        // when
+        TestObserver<Long> elapsedTime = SUT.timeElapsed(Observable.fromArray(0L, 100L, 200L))
+                .doOnNext(System.out::println).test();
+
+        // then
+        elapsedTime.assertValues(0L, 600L, 700L);
     }
 }

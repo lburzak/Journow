@@ -9,10 +9,12 @@ import com.github.polydome.journow.domain.repository.SessionRepository;
 import com.github.polydome.journow.domain.repository.TaskRepository;
 import com.github.polydome.journow.domain.service.TrackerDataStorage;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.subjects.BehaviorSubject;
 import io.reactivex.rxjava3.subjects.Subject;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.util.Optional;
 
 public class Tracker {
@@ -36,6 +38,7 @@ public class Tracker {
             throw new NoSuchTaskException(taskId);
 
         _currentTask.onNext(task.get());
+
         dataStorage.save(new TrackerData(taskId, clock.instant()));
     }
 
@@ -54,5 +57,22 @@ public class Tracker {
 
     public Observable<Task> currentTask() {
         return _currentTask.toSerialized();
+    }
+
+    public Observable<Long> timeElapsed(Observable<Long> interval) {
+        return interval
+                .flatMapSingle(tick -> calculateTimeElapsed())
+                .map(Duration::toMillis);
+    }
+
+    private Single<Duration> calculateTimeElapsed() {
+        return Single.create(emitter -> {
+            Optional<TrackerData> data = dataStorage.read();
+            if (data.isPresent()) {
+                emitter.onSuccess(Duration.between(clock.instant(), data.get().getStartTime()).abs());
+            } else {
+                emitter.onError(new TrackerNotRunningException());
+            }
+        });
     }
 }
