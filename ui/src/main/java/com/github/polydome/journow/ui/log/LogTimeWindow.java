@@ -1,4 +1,4 @@
-package com.github.polydome.journow.ui;
+package com.github.polydome.journow.ui.log;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
