@@ -1,13 +1,17 @@
 package com.github.polydome.journow.di;
 
-import com.github.polydome.journow.viewmodel.TrackerViewModel;
 import dagger.Module;
 import dagger.Provides;
+import io.reactivex.rxjava3.core.Observable;
 
-@Module
+import javax.inject.Named;
+import java.util.concurrent.TimeUnit;
+
+@Module(includes = {DomainModule.class})
 public class PresentationModule {
     @Provides
-    public TrackerViewModel trackerViewModel() {
-        return new TrackerViewModel();
+    @Named("TimerUpdateInterval")
+    Observable<Long> timerUpdateInterval() {
+        return Observable.interval(100, TimeUnit.MILLISECONDS);
     }
 }

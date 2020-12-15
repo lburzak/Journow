@@ -7,5 +7,5 @@ import java.util.Optional;
 public interface TrackerDataStorage {
     void save(TrackerData data);
     Optional<TrackerData> read();
-    TrackerData clear();
+    void clear();
 }
