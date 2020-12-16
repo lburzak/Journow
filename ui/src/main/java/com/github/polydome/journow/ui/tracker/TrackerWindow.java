@@ -19,12 +19,13 @@ public class TrackerWindow extends JFrame {
 
         setLocationRelativeTo(null);
 
-        setSize(800, 64 + 20);
+        setSize(800, 400);
     }
 
     private void createContentView(TrackerViewModel viewModel) {
-        JPanel mainPanel = new TrackerIndex(viewModel);
+        TrackerIndex mainPanel = new TrackerIndex(viewModel);
         setContentPane(mainPanel);
+        mainPanel.onCreate();
     }
 
     public void showWindow() {

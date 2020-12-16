@@ -20,7 +20,7 @@ public class DomainModule {
         return new TaskRepository() {
             @Override
             public Optional<Task> findById(long taskId) {
-                return Optional.of(new Task(12, "Sample task"));
+                return Optional.of(new Task(12, "Sample task but this one is super long so it is visible"));
             }
         };
     }
