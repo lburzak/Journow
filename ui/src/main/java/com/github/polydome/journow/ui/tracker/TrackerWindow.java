@@ -4,8 +4,10 @@ import com.github.polydome.journow.viewmodel.TrackerViewModel;
 
 import javax.inject.Inject;
 import javax.swing.*;
+import java.awt.*;
 
 public class TrackerWindow extends JFrame {
+    private final BorderLayout layout = new BorderLayout();
 
     @Inject
     public TrackerWindow(TrackerViewModel trackerViewModel) {
@@ -16,6 +18,7 @@ public class TrackerWindow extends JFrame {
     private void createWindow() {
         setTitle("Journow - Tracker");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(layout);
 
         setLocationRelativeTo(null);
 
@@ -24,7 +27,8 @@ public class TrackerWindow extends JFrame {
 
     private void createContentView(TrackerViewModel viewModel) {
         TrackerIndex mainPanel = new TrackerIndex(viewModel);
-        setContentPane(mainPanel);
+        getContentPane().add(mainPanel, BorderLayout.PAGE_END);
+
         mainPanel.onCreate();
     }
 

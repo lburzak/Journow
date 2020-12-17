@@ -24,7 +24,7 @@ public class TrackerIndex extends JPanel {
     }
 
     public void onCreate() {
-        setPreferredSize(new Dimension(getMaximumSize().width - 20, 60));
+        setPreferredSize(new Dimension(0, 60));
         inflateLayout();
     }
 
