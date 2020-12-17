@@ -7,18 +7,20 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 
+import static javax.swing.SpringLayout.*;
+
 public class TrackerIndex extends JPanel {
     private final SpringLayout layout = new SpringLayout();
     JLabel elapsedTimeCounter = new JLabel();
     JLabel taskTitleLabel = new JLabel();
 
     private void inflateLayout() {
-        layout.putConstraint(SpringLayout.SOUTH, elapsedTimeCounter, -5, SpringLayout.SOUTH, this);
-        layout.putConstraint(SpringLayout.WEST, elapsedTimeCounter, 5, SpringLayout.WEST, this);
+        layout.putConstraint(SOUTH, elapsedTimeCounter, -5, SOUTH, this);
+        layout.putConstraint(WEST, elapsedTimeCounter, 5, WEST, this);
+        layout.putConstraint(VERTICAL_CENTER, elapsedTimeCounter, 0, VERTICAL_CENTER, this);
 
-        layout.putConstraint(SpringLayout.VERTICAL_CENTER, taskTitleLabel, 0, SpringLayout.VERTICAL_CENTER, elapsedTimeCounter);
-        layout.putConstraint(SpringLayout.WEST, taskTitleLabel, 12, SpringLayout.EAST, elapsedTimeCounter);
-        layout.putConstraint(SpringLayout.EAST, taskTitleLabel, 5, SpringLayout.EAST, this);
+        layout.putConstraint(VERTICAL_CENTER, taskTitleLabel, 0, VERTICAL_CENTER, elapsedTimeCounter);
+        layout.putConstraint(HORIZONTAL_CENTER, taskTitleLabel, 0, HORIZONTAL_CENTER, this);
     }
 
     public void onCreate() {
