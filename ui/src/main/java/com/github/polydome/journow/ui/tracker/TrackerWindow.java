@@ -28,6 +28,7 @@ public class TrackerWindow extends JFrame {
     private void createContentView(TrackerViewModel viewModel) {
         TrackerBar mainPanel = new TrackerBar(viewModel);
         getContentPane().add(mainPanel, BorderLayout.PAGE_END);
+        getContentPane().add(new ListsPager(), BorderLayout.LINE_START);
 
         mainPanel.onCreate();
     }
