@@ -9,7 +9,7 @@ import java.awt.*;
 
 import static javax.swing.SpringLayout.*;
 
-public class TrackerIndex extends JPanel {
+public class TrackerBar extends JPanel {
     private final SpringLayout layout = new SpringLayout();
     JLabel elapsedTimeCounter = new JLabel();
     JLabel taskTitleLabel = new JLabel();
@@ -29,7 +29,7 @@ public class TrackerIndex extends JPanel {
     }
 
     @Inject
-    public TrackerIndex(TrackerViewModel viewModel) {
+    public TrackerBar(TrackerViewModel viewModel) {
         super();
         int margin = 10;
         Border emptyBorder = BorderFactory.createEmptyBorder(margin, margin, margin, margin);
