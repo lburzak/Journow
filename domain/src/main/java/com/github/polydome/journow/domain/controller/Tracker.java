@@ -50,7 +50,7 @@ public class Tracker {
         else {
             Optional<Task> task = taskRepository.findById(data.get().getTaskId());
 
-            sessionRepository.insert(new Session(data.get().getStartTime(), clock.instant(), task.orElse(null)));
+            sessionRepository.insert(new Session(0, data.get().getStartTime(), clock.instant(), task.orElse(null)));
             dataStorage.clear();
         }
     }

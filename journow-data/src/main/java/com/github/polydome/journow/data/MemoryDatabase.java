@@ -34,6 +34,19 @@ public class MemoryDatabase implements Database {
             e.printStackTrace();
         }
 
+        try (var statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS session (" +
+                "session_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "task_id INTEGER NOT NULL," +
+                "start_date TIMESTAMP NOT NULL," +
+                "end_date TIMESTAMP NOT NULL," +
+                "FOREIGN KEY (task_id) REFERENCES task(task_id)" +
+                ");")
+        ) {
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         initialized = true;
     }
 }
