@@ -56,6 +56,12 @@ public class TrackerBar extends JPanel {
         setLayout(layout);
 
         elapsedTimeCounter.setFont(new Font("Roboto", Font.PLAIN, 24));
+        stopTrackerButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                viewModel.endSession();
+            }
+        });
 
         add(elapsedTimeCounter);
         add(taskTitleLabel);
