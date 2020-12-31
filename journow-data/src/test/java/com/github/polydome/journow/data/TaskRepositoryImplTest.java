@@ -5,10 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -115,5 +116,28 @@ public class TaskRepositoryImplTest {
         int count = SUT.count();
 
         assertThat(count, equalTo(2));
+    }
+
+    @Test
+    void findAll_databaseNotReady_throwsIllegalStateException() {
+        Exception exception = assertThrows(IllegalStateException.class, () -> SUT.findAll());
+
+        assertThat(exception.getMessage(), equalTo("Database is not ready"));
+    }
+
+    @Test
+    void findAll_tasksInDatabase_returnsTasksList() {
+        database.init();
+
+        SUT.insert(new Task(0, "test task 1"));
+        SUT.insert(new Task(0, "test task 2"));
+
+        List<Task> tasks = SUT.findAll();
+
+        assertThat(tasks.size(), equalTo(2));
+        assertThat(tasks, hasItems(
+                new Task(1, "test task 1"),
+                new Task(2, "test task 2")
+        ));
     }
 }
