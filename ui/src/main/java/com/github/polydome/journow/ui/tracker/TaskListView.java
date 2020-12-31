@@ -1,10 +1,15 @@
 package com.github.polydome.journow.ui.tracker;
 
+import com.github.polydome.journow.domain.model.Task;
+import com.github.polydome.journow.ui.listmodel.TaskListModel;
+
+import javax.inject.Inject;
 import javax.swing.*;
-import java.awt.*;
 
 public class TaskListView extends JPanel {
-    public TaskListView() {
-        add(new TextField("This is task list"));
+    @Inject
+    public TaskListView(TaskListModel model) {
+        JList<Task> list = new JList<>(model);
+        add(list);
     }
 }

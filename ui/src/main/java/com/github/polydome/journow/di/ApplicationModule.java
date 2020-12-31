@@ -1,7 +1,7 @@
 package com.github.polydome.journow.di;
 
 import com.github.polydome.journow.data.Database;
-import com.github.polydome.journow.data.database.MemoryDatabase;
+import com.github.polydome.journow.data.database.LocalDatabase;
 import dagger.Module;
 import dagger.Provides;
 
@@ -12,6 +12,6 @@ public class ApplicationModule {
     @Provides
     @Singleton
     Database database() {
-        return new MemoryDatabase();
+        return new LocalDatabase();
     }
 }
