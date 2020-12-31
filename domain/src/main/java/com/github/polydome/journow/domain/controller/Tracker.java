@@ -23,6 +23,7 @@ public class Tracker {
     private final Clock clock;
     private final SessionRepository sessionRepository;
     private final Subject<Task> _currentTask = BehaviorSubject.create();
+    private final Subject<Boolean> _isRunning = BehaviorSubject.createDefault(false);
 
     public Tracker(TaskRepository taskRepository, TrackerDataStorage dataStorage, Clock clock, SessionRepository sessionRepository) {
         this.taskRepository = taskRepository;
@@ -40,6 +41,8 @@ public class Tracker {
         _currentTask.onNext(task.get());
 
         dataStorage.save(new TrackerData(taskId, clock.instant()));
+
+        _isRunning.onNext(true);
     }
 
     public void stop() {
@@ -52,7 +55,13 @@ public class Tracker {
 
             sessionRepository.insert(new Session(0, data.get().getStartTime(), clock.instant(), task.orElse(null)));
             dataStorage.clear();
+
+            _isRunning.onNext(false);
         }
+    }
+
+    public Observable<Boolean> isRunning() {
+        return _isRunning.toSerialized();
     }
 
     public Observable<Task> currentTask() {
