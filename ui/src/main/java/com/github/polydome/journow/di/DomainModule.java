@@ -70,7 +70,6 @@ public class DomainModule {
         Tracker tracker = new Tracker(
                 taskRepository, trackerDataStorage, clock, sessionRepository
         );
-        tracker.start(12);
         return tracker;
     }
 }

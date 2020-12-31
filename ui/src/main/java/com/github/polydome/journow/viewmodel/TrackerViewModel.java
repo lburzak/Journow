@@ -19,6 +19,10 @@ public class TrackerViewModel {
         this.updateInterval = updateInterval;
     }
 
+    public Observable<Boolean> hasOngoingSession() {
+        return tracker.isRunning();
+    }
+
     public Observable<String> getTimer() {
         return tracker.timeElapsed(updateInterval).map(this::millisToReadableDuration);
     }
