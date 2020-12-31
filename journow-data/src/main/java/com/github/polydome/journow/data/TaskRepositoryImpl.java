@@ -4,6 +4,8 @@ import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.TaskRepository;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -36,6 +38,42 @@ public class TaskRepositoryImpl implements TaskRepository {
             e.printStackTrace();
             return Optional.empty();
         }
+    }
+
+    private PreparedStatement insertNewTask;
+    private PreparedStatement insertTask;
+
+    @Override
+    public Task insert(Task task) {
+        try {
+            if (task.getId() == 0) {
+                if (insertNewTask == null)
+                    insertNewTask = getConnection().prepareStatement("insert into task (title) values (?)");
+
+                insertNewTask.setString(1, task.getTitle());
+                insertNewTask.execute();
+
+                try (ResultSet generatedKeys = insertNewTask.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        long id = generatedKeys.getLong(1);
+                        return new Task(id, task.getTitle());
+                    }
+                }
+            } else {
+                if (insertTask == null)
+                    insertTask = getConnection().prepareStatement("insert into task (task_id, title) values (?, ?)");
+
+                insertTask.setLong(1, task.getId());
+                insertTask.setString(2, task.getTitle());
+                insertTask.execute();
+
+                return task;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     private Connection getConnection() throws SQLException {
