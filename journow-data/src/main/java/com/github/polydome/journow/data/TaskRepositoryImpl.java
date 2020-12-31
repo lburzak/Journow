@@ -12,6 +12,10 @@ import java.util.Optional;
 public class TaskRepositoryImpl implements TaskRepository {
     private final Database database;
 
+    private PreparedStatement insertNewTask;
+    private PreparedStatement insertTask;
+    private PreparedStatement countTasks;
+
     public TaskRepositoryImpl(Database database) {
         this.database = database;
     }
@@ -39,9 +43,6 @@ public class TaskRepositoryImpl implements TaskRepository {
             return Optional.empty();
         }
     }
-
-    private PreparedStatement insertNewTask;
-    private PreparedStatement insertTask;
 
     @Override
     public Task insert(Task task) {
@@ -77,6 +78,28 @@ public class TaskRepositoryImpl implements TaskRepository {
         }
 
         return null;
+    }
+
+    @Override
+    public int count() {
+        if (!database.isReady())
+            throw new IllegalStateException("Database is not ready");
+
+        try {
+            if (countTasks == null)
+                countTasks = getConnection().prepareStatement("select count(*) from task");
+
+            try (ResultSet rs = countTasks.executeQuery()) {
+                if (rs.next())
+                    return rs.getInt(1);
+                else
+                    return 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 
     private Connection getConnection() throws SQLException {
