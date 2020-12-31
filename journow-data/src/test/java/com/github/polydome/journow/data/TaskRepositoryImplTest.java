@@ -88,4 +88,32 @@ public class TaskRepositoryImplTest {
 
         assertThat(exception.getMessage(), equalTo("Database is not ready"));
     }
+
+    @Test
+    void count_databaseNotReady_throwsIllegalStateException() {
+        Exception exception = assertThrows(IllegalStateException.class, () -> SUT.count());
+
+        assertThat(exception.getMessage(), equalTo("Database is not ready"));
+    }
+
+    @Test
+    void count_noTasks_returns0() {
+        database.init();
+
+        int count = SUT.count();
+
+        assertThat(count, equalTo(0));
+    }
+
+    @Test
+    void count_tasksInDatabase_returnsTasksCount() {
+        database.init();
+
+        SUT.insert(new Task(0, "test task 1"));
+        SUT.insert(new Task(0, "test task 2"));
+
+        int count = SUT.count();
+
+        assertThat(count, equalTo(2));
+    }
 }
