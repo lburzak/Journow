@@ -28,7 +28,7 @@ public class LogSessionUseCase {
         if (startedAt.isAfter(endedAt))
             throw new IllegalArgumentException("End date precedes start date");
 
-        Session session = new Session(startedAt, endedAt, task.get());
+        Session session = new Session(0, startedAt, endedAt, task.get());
 
         sessionRepository.insert(session);
     }
