@@ -1,10 +1,11 @@
-package com.github.polydome.journow.data;
+package com.github.polydome.journow.data.database;
+
+import com.github.polydome.journow.data.Database;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class MemoryDatabase implements Database {
+abstract public class SingleConnectionDatabase implements Database {
     private boolean initialized = false;
     private Connection connection = null;
 
@@ -18,9 +19,7 @@ public class MemoryDatabase implements Database {
         return initialized;
     }
 
-    private Connection newConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:sqlite::memory:");
-    }
+    protected abstract Connection newConnection() throws SQLException;
 
     @Override
     public void init() {
