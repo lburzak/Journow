@@ -186,4 +186,30 @@ public class TrackerTest {
         // then
         elapsedTime.assertValues(0L, 600L, 700L);
     }
+
+    @Test
+    void isRunning_timerNotStarted_emitsFalse() {
+        SUT.isRunning().test().assertValue(false);
+    }
+
+    @Test
+    void isRunning_timerStarted_emitsTrue() {
+        Instant now = Instant.ofEpochMilli(12000000);
+        long TASK_ID = 15;
+        when(clock.instant()).thenReturn(now);
+        when(taskRepository.findById(TASK_ID)).thenReturn(Optional.of(new Task(TASK_ID, "test task")));
+
+        SUT.start(TASK_ID);
+        SUT.isRunning().test().assertValue(true);
+    }
+
+    @Test
+    void isRunning_timerStopped_emitsFalse() {
+        Instant now = Instant.ofEpochMilli(12000000);
+        long TASK_ID = 15;
+        when(trackerDataStorage.read()).thenReturn(Optional.of(new TrackerData(TASK_ID, now)));
+
+        SUT.stop();
+        SUT.isRunning().test().assertValue(false);
+    }
 }
