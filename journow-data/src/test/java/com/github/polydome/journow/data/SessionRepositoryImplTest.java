@@ -6,6 +6,7 @@ import com.github.polydome.journow.domain.repository.SessionRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -52,16 +53,36 @@ class SessionRepositoryImplTest {
         }
     }
 
+    @Test
+    void insert_sessionIdIs0_insertsNewSession() {
+        Session session = createSession(0);
+
+        database.init();
+        SUT.insert(session);
+
+        try (PreparedStatement stmt = database.getConnection().prepareStatement("select session_id from session where session_id == 1")) {
+            stmt.execute();
+
+            assertThat(stmt.getResultSet().next(), equalTo(true));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     Task createTask() {
         return new Task(2, "Test task");
     }
 
     Session createSession() {
+        return createSession(12);
+    }
+
+    Session createSession(long id) {
         Instant startDate = Instant.ofEpochMilli(680002334);
         Instant endDate = startDate.plusSeconds(10);
         Task task = createTask();
 
-        return new Session(12, startDate, endDate, task);
+        return new Session(id, startDate, endDate, task);
     }
 
 
