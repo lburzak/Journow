@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class TaskRepositoryImpl implements TaskRepository {
@@ -15,6 +17,7 @@ public class TaskRepositoryImpl implements TaskRepository {
     private PreparedStatement insertNewTask;
     private PreparedStatement insertTask;
     private PreparedStatement countTasks;
+    private PreparedStatement findAll;
 
     public TaskRepositoryImpl(Database database) {
         this.database = database;
@@ -100,6 +103,33 @@ public class TaskRepositoryImpl implements TaskRepository {
         }
 
         return 0;
+    }
+
+    @Override
+    public List<Task> findAll() {
+        if (!database.isReady())
+            throw new IllegalStateException("Database is not ready");
+
+        try {
+            if (findAll == null)
+                findAll = getConnection().prepareStatement("select task_id, title from task");
+
+            try (var rs = findAll.executeQuery()) {
+                ArrayList<Task> tasks = new ArrayList<>();
+
+                while (rs.next()) {
+                    tasks.add(
+                            new Task(rs.getLong(1), rs.getString(2))
+                    );
+                }
+
+                return tasks;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return List.of();
     }
 
     private Connection getConnection() throws SQLException {
