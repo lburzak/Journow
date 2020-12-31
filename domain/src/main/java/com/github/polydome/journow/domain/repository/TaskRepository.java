@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface TaskRepository {
     Optional<Task> findById(long taskId);
+    Task insert(Task task);
 }

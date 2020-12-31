@@ -1,10 +1,12 @@
 package com.github.polydome.journow.data;
 
+import com.github.polydome.journow.domain.model.Session;
 import com.github.polydome.journow.domain.model.Task;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -49,5 +51,39 @@ public class TaskRepositoryImplTest {
         Exception exception = assertThrows(IllegalStateException.class, () -> SUT.findById(12));
 
         assertThat(exception.getMessage(), equalTo("Database is not ready"));
+    }
+
+    @Test
+    void insert_taskNotExists_insertsTask() throws SQLException {
+        Task task = new Task(2, "test task");
+
+        database.init();
+        SUT.insert(task);
+
+        try (
+                var stmt = database.getConnection()
+                        .prepareStatement("select task_id, title from task where task_id = ?")
+        ) {
+            stmt.setLong(1, task.getId());
+
+            try (var resultSet = stmt.executeQuery()) {
+                assertThat(resultSet.next(), equalTo(true));
+                assertThat(resultSet.getLong(1), equalTo(task.getId()));
+                assertThat(resultSet.getString(2), equalTo(task.getTitle()));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void insert_taskNotExists_returnsCreatedTask() throws SQLException {
+        Task task = new Task(0, "test task");
+
+        database.init();
+        Task actual = SUT.insert(task);
+
+        assertThat(actual.getTitle(), equalTo(task.getTitle()));
+        assertThat(actual.getId(), equalTo(1L));
     }
 }
