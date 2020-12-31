@@ -45,6 +45,9 @@ public class TaskRepositoryImpl implements TaskRepository {
 
     @Override
     public Task insert(Task task) {
+        if (!database.isReady())
+            throw new IllegalStateException("Database is not ready");
+
         try {
             if (task.getId() == 0) {
                 if (insertNewTask == null)

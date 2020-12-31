@@ -1,20 +1,15 @@
 package com.github.polydome.journow.data;
 
-import com.github.polydome.journow.domain.model.Session;
 import com.github.polydome.journow.domain.model.Task;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class TaskRepositoryImplTest {
@@ -85,5 +80,12 @@ public class TaskRepositoryImplTest {
 
         assertThat(actual.getTitle(), equalTo(task.getTitle()));
         assertThat(actual.getId(), equalTo(1L));
+    }
+
+    @Test
+    void insert_databaseNotReady_throwsIllegalStateException() {
+        Exception exception = assertThrows(IllegalStateException.class, () -> SUT.insert(new Task(0, "test task")));
+
+        assertThat(exception.getMessage(), equalTo("Database is not ready"));
     }
 }
