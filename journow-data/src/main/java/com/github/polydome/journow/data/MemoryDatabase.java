@@ -22,8 +22,13 @@ public class MemoryDatabase implements Database {
         return DriverManager.getConnection("jdbc:sqlite::memory:");
     }
 
-    public void init() throws SQLException {
-        connection = newConnection();
+    @Override
+    public void init() {
+        try {
+            connection = newConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         try (var statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS task (" +
                 "task_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "title VARCHAR(120) NOT NULL" +
