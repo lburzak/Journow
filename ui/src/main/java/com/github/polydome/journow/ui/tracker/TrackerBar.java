@@ -14,15 +14,21 @@ import static javax.swing.SpringLayout.*;
 
 public class TrackerBar extends JPanel {
     private final SpringLayout layout = new SpringLayout();
+    private final TrackerViewModel viewModel;
+
     JLabel elapsedTimeCounter = new JLabel();
     JLabel taskTitleLabel = new JLabel();
     JTextField taskTitleInput = new JTextField("this is an example task");
-    private final TrackerViewModel viewModel;
+    JButton stopTrackerButton = new JButton("Stop");
 
     private void inflateLayout() {
         layout.putConstraint(SOUTH, elapsedTimeCounter, -5, SOUTH, this);
         layout.putConstraint(WEST, elapsedTimeCounter, 5, WEST, this);
         layout.putConstraint(VERTICAL_CENTER, elapsedTimeCounter, 0, VERTICAL_CENTER, this);
+
+        layout.putConstraint(SOUTH, stopTrackerButton, -5, SOUTH, this);
+        layout.putConstraint(NORTH, stopTrackerButton, 5, NORTH, this);
+        layout.putConstraint(EAST, stopTrackerButton, 5, EAST, this);
 
         layout.putConstraint(VERTICAL_CENTER, taskTitleLabel, 0, VERTICAL_CENTER, elapsedTimeCounter);
         layout.putConstraint(HORIZONTAL_CENTER, taskTitleLabel, 0, HORIZONTAL_CENTER, this);
@@ -54,6 +60,7 @@ public class TrackerBar extends JPanel {
         add(elapsedTimeCounter);
         add(taskTitleLabel);
         add(taskTitleInput);
+        add(stopTrackerButton);
 
         setupKeys();
 
@@ -67,6 +74,7 @@ public class TrackerBar extends JPanel {
                 .subscribe(it -> {
                     taskTitleLabel.setVisible(it);
                     elapsedTimeCounter.setVisible(it);
+                    stopTrackerButton.setVisible(it);
                     taskTitleInput.setVisible(!it);
                 });
 
