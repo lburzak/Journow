@@ -1,5 +1,9 @@
 package com.github.polydome.journow.di;
 
+import com.github.polydome.journow.data.Database;
+import com.github.polydome.journow.data.MemoryDatabase;
+import com.github.polydome.journow.data.SessionRepositoryImpl;
+import com.github.polydome.journow.data.TaskRepositoryImpl;
 import com.github.polydome.journow.domain.controller.Tracker;
 import com.github.polydome.journow.domain.model.Session;
 import com.github.polydome.journow.domain.model.Task;
@@ -16,23 +20,13 @@ import java.util.Optional;
 @Module
 public class DomainModule {
     @Provides
-    TaskRepository taskRepository() {
-        return new TaskRepository() {
-            @Override
-            public Optional<Task> findById(long taskId) {
-                return Optional.of(new Task(12, "Sample task but this one is super long so it is visible"));
-            }
-        };
+    TaskRepository taskRepository(Database database) {
+        return new TaskRepositoryImpl(database);
     }
 
     @Provides
-    SessionRepository sessionRepository() {
-        return new SessionRepository() {
-            @Override
-            public void insert(Session session) {
-                System.out.println("Inserted session: " + session.toString());
-            }
-        };
+    SessionRepository sessionRepository(Database database) {
+        return new SessionRepositoryImpl(database);
     }
 
     @Provides
@@ -71,5 +65,10 @@ public class DomainModule {
                 taskRepository, trackerDataStorage, clock, sessionRepository
         );
         return tracker;
+    }
+
+    @Provides
+    Database database() {
+        return new MemoryDatabase();
     }
 }
