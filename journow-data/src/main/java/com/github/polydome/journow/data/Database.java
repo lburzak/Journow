@@ -5,5 +5,6 @@ import java.sql.SQLException;
 
 public interface Database {
     Connection getConnection() throws SQLException;
+    void init();
     boolean isReady();
 }

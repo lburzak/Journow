@@ -7,6 +7,8 @@ import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 import static javax.swing.SpringLayout.*;
 
@@ -15,6 +17,7 @@ public class TrackerBar extends JPanel {
     JLabel elapsedTimeCounter = new JLabel();
     JLabel taskTitleLabel = new JLabel();
     JTextField taskTitleInput = new JTextField("this is an example task");
+    private final TrackerViewModel viewModel;
 
     private void inflateLayout() {
         layout.putConstraint(SOUTH, elapsedTimeCounter, -5, SOUTH, this);
@@ -43,6 +46,8 @@ public class TrackerBar extends JPanel {
     @Inject
     public TrackerBar(TrackerViewModel viewModel) {
         super();
+        this.viewModel = viewModel;
+
         int margin = 10;
         Border emptyBorder = BorderFactory.createEmptyBorder(margin, margin, margin, margin);
         setBorder(emptyBorder);
@@ -54,6 +59,8 @@ public class TrackerBar extends JPanel {
         add(elapsedTimeCounter);
         add(taskTitleLabel);
         add(taskTitleInput);
+
+        setupKeys();
 
         viewModel.getTimer()
                 .subscribe(elapsedTimeCounter::setText, this::onError);
@@ -68,5 +75,16 @@ public class TrackerBar extends JPanel {
                 });
 
         setVisible(true);
+    }
+
+    private void setupKeys() {
+        taskTitleInput.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+                "start");
+        taskTitleInput.getActionMap().put("start", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                viewModel.startSession(taskTitleInput.getText());
+            }
+        });
     }
 }

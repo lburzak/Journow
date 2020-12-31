@@ -1,12 +1,9 @@
 package com.github.polydome.journow.di;
 
 import com.github.polydome.journow.data.Database;
-import com.github.polydome.journow.data.MemoryDatabase;
 import com.github.polydome.journow.data.SessionRepositoryImpl;
 import com.github.polydome.journow.data.TaskRepositoryImpl;
 import com.github.polydome.journow.domain.controller.Tracker;
-import com.github.polydome.journow.domain.model.Session;
-import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.model.TrackerData;
 import com.github.polydome.journow.domain.repository.SessionRepository;
 import com.github.polydome.journow.domain.repository.TaskRepository;
@@ -61,14 +58,8 @@ public class DomainModule {
 
     @Provides
     Tracker tracker(TaskRepository taskRepository, TrackerDataStorage trackerDataStorage, Clock clock, SessionRepository sessionRepository) {
-        Tracker tracker = new Tracker(
+        return new Tracker(
                 taskRepository, trackerDataStorage, clock, sessionRepository
         );
-        return tracker;
-    }
-
-    @Provides
-    Database database() {
-        return new MemoryDatabase();
     }
 }

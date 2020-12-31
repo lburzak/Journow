@@ -12,6 +12,8 @@ public class App {
     }
 
     public void run() {
+        applicationComponent.database().init();
+
         // Enable Anti-aliasing
         System.setProperty("awt.useSystemAAFontSettings", "lcd");
 
