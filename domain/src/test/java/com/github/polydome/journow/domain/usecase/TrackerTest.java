@@ -19,18 +19,18 @@ import org.mockito.Mockito;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class TrackerTest {
     TaskRepository taskRepository = Mockito.mock(TaskRepository.class);
-    TrackerDataStorage trackerDataStorage = Mockito.mock(TrackerDataStorage.class);
+    MemoryTrackerDataStorage trackerDataStorage = new MemoryTrackerDataStorage();
     Clock clock = Mockito.mock(Clock.class);
     SessionRepository sessionRepository = Mockito.mock(SessionRepository.class);
     Tracker SUT = new Tracker(taskRepository, trackerDataStorage, clock, sessionRepository);
@@ -58,10 +58,8 @@ public class TrackerTest {
         SUT.start(TASK_ID);
 
         // then
-        ArgumentCaptor<TrackerData> dataCpt = ArgumentCaptor.forClass(TrackerData.class);
-        verify(trackerDataStorage).save(dataCpt.capture());
-
-        TrackerData actual = dataCpt.getValue();
+        assertThat(trackerDataStorage.read().isPresent(), equalTo(true));
+        TrackerData actual = trackerDataStorage.read().get();
         assertThat(actual.getStartTime(), equalTo(now));
         assertThat(actual.getTaskId(), equalTo(TASK_ID));
     }
@@ -72,11 +70,11 @@ public class TrackerTest {
         Instant start = Instant.ofEpochMilli(600000);
         Instant now = Instant.ofEpochMilli(12000000);
         Task task = new Task(15, "test task");
-        when(clock.instant()).thenReturn(now);
-        when(trackerDataStorage.read()).thenReturn(Optional.of(new TrackerData(task.getId(), start)));
+        when(clock.instant()).thenReturn(start, now);
         when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
 
         // when
+        SUT.start(task.getId());
         SUT.stop();
 
         // then
@@ -93,12 +91,12 @@ public class TrackerTest {
     @Test
     public void stop_trackerRunning_clearsData() {
         Task task = new Task(15, "test task");
-        when(trackerDataStorage.read()).thenReturn(Optional.of(new TrackerData(task.getId(), Instant.ofEpochMilli(233))));
         when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
 
+        SUT.start(task.getId());
         SUT.stop();
 
-        verify(trackerDataStorage).clear();
+        assertThat(trackerDataStorage.read(), equalTo(Optional.empty()));
     }
 
     @Test
@@ -107,11 +105,12 @@ public class TrackerTest {
         Instant start = Instant.ofEpochMilli(600000);
         Instant now = Instant.ofEpochMilli(12000000);
         long TASK_ID = 15;
-        when(clock.instant()).thenReturn(now);
-        when(trackerDataStorage.read()).thenReturn(Optional.of(new TrackerData(TASK_ID, start)));
-        when(taskRepository.findById(TASK_ID)).thenReturn(Optional.empty());
+        when(clock.instant()).thenReturn(start, now);
+        when(taskRepository.findById(TASK_ID)).thenReturn(Optional.of(new Task(TASK_ID, "test task")));
 
         // when
+        SUT.start(TASK_ID);
+        when(taskRepository.findById(TASK_ID)).thenReturn(Optional.empty());
         SUT.stop();
 
         // then
@@ -153,21 +152,6 @@ public class TrackerTest {
     }
 
     @Test
-    public void timeElapsed_trackerStarted_emits0Immediately() {
-        // given
-        Instant now = Instant.ofEpochMilli(12000000);
-        Task task = new Task(15, "test task");
-        when(clock.instant()).thenReturn(now);
-        when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
-
-        // when
-        SUT.start(task.getId());
-
-        // then
-        SUT.timeElapsed(Observable.fromArray(0L, 100L, 200L)).test().assertValue(0L);
-    }
-
-    @Test
     void timeElapsed_trackerStarted_emitsMillisecondsElapsedWithinAcceptableRange() {
         // given
         Instant start = Instant.now();
@@ -175,16 +159,15 @@ public class TrackerTest {
         Instant secondTick = start.plusMillis(700);
         Task task = new Task(15, "test task");
 
-        when(clock.instant()).thenReturn(start, firstTick, secondTick);
+        when(clock.instant()).thenReturn(start, firstTick, secondTick, start.plusMillis(800));
         when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
-        when(trackerDataStorage.read()).thenReturn(Optional.of(new TrackerData(task.getId(), start)));
 
         // when
-        TestObserver<Long> elapsedTime = SUT.timeElapsed(Observable.fromArray(0L, 100L, 200L))
-                .doOnNext(System.out::println).test();
+        SUT.start(task.getId());
+        TestObserver<Long> elapsedTime = SUT.timeElapsed(Observable.fromArray(0L, 100L, 200L)).test();
 
         // then
-        elapsedTime.assertValues(0L, 600L, 700L);
+        elapsedTime.assertValues(600L, 700L, 800L);
     }
 
     @Test
@@ -207,8 +190,10 @@ public class TrackerTest {
     void isRunning_timerStopped_emitsFalse() {
         Instant now = Instant.ofEpochMilli(12000000);
         long TASK_ID = 15;
-        when(trackerDataStorage.read()).thenReturn(Optional.of(new TrackerData(TASK_ID, now)));
+        when(clock.instant()).thenReturn(now);
+        when(taskRepository.findById(TASK_ID)).thenReturn(Optional.of(new Task(TASK_ID, "test task")));
 
+        SUT.start(TASK_ID);
         SUT.stop();
         SUT.isRunning().test().assertValue(false);
     }
