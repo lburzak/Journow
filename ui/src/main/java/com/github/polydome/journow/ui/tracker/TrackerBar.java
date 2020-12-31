@@ -1,5 +1,6 @@
 package com.github.polydome.journow.ui.tracker;
 
+import com.github.polydome.journow.domain.exception.TrackerNotRunningException;
 import com.github.polydome.journow.viewmodel.TrackerViewModel;
 
 import javax.inject.Inject;
@@ -13,6 +14,7 @@ public class TrackerBar extends JPanel {
     private final SpringLayout layout = new SpringLayout();
     JLabel elapsedTimeCounter = new JLabel();
     JLabel taskTitleLabel = new JLabel();
+    JTextField taskTitleInput = new JTextField("this is an example task");
 
     private void inflateLayout() {
         layout.putConstraint(SOUTH, elapsedTimeCounter, -5, SOUTH, this);
@@ -21,11 +23,21 @@ public class TrackerBar extends JPanel {
 
         layout.putConstraint(VERTICAL_CENTER, taskTitleLabel, 0, VERTICAL_CENTER, elapsedTimeCounter);
         layout.putConstraint(HORIZONTAL_CENTER, taskTitleLabel, 0, HORIZONTAL_CENTER, this);
+
+        layout.putConstraint(EAST, taskTitleInput, 0, EAST, this);
+        layout.putConstraint(WEST, taskTitleInput, 0, WEST, this);
+        layout.putConstraint(SOUTH, taskTitleInput, 0, SOUTH, this);
+        layout.putConstraint(NORTH, taskTitleInput, 0, NORTH, this);
     }
 
     public void onCreate() {
         setPreferredSize(new Dimension(0, 60));
         inflateLayout();
+    }
+
+    private void onError(Throwable e) {
+        if (!(e instanceof TrackerNotRunningException))
+            e.printStackTrace();
     }
 
     @Inject
@@ -41,12 +53,19 @@ public class TrackerBar extends JPanel {
 
         add(elapsedTimeCounter);
         add(taskTitleLabel);
+        add(taskTitleInput);
 
         viewModel.getTimer()
-                .subscribe(elapsedTimeCounter::setText);
+                .subscribe(elapsedTimeCounter::setText, this::onError);
 
         viewModel.getTaskTitle()
                 .subscribe(taskTitleLabel::setText);
+
+        viewModel.hasOngoingSession()
+                .subscribe(it -> {
+                    taskTitleLabel.setVisible(it);
+                    taskTitleInput.setVisible(!it);
+                });
 
         setVisible(true);
     }
