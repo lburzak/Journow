@@ -50,4 +50,8 @@ public class TrackerViewModel {
 
         tracker.start(task.getId());
     }
+
+    public void endSession() {
+        tracker.stop();
+    }
 }
