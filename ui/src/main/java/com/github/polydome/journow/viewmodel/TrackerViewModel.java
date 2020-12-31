@@ -27,7 +27,12 @@ public class TrackerViewModel {
     }
 
     public Observable<String> getTimer() {
-        return tracker.timeElapsed(updateInterval).map(this::millisToReadableDuration);
+        return hasOngoingSession().switchMap(ongoingSession -> {
+            if (ongoingSession)
+                return tracker.timeElapsed(updateInterval);
+            else
+                return Observable.just(0L);
+        }).map(this::millisToReadableDuration);
     }
 
     public Observable<String> getTaskTitle() {

@@ -38,11 +38,6 @@ public class TrackerBar extends JPanel {
         inflateLayout();
     }
 
-    private void onError(Throwable e) {
-        if (!(e instanceof TrackerNotRunningException))
-            e.printStackTrace();
-    }
-
     @Inject
     public TrackerBar(TrackerViewModel viewModel) {
         super();
@@ -63,7 +58,7 @@ public class TrackerBar extends JPanel {
         setupKeys();
 
         viewModel.getTimer()
-                .subscribe(elapsedTimeCounter::setText, this::onError);
+                .subscribe(elapsedTimeCounter::setText);
 
         viewModel.getTaskTitle()
                 .subscribe(taskTitleLabel::setText);
@@ -71,6 +66,7 @@ public class TrackerBar extends JPanel {
         viewModel.hasOngoingSession()
                 .subscribe(it -> {
                     taskTitleLabel.setVisible(it);
+                    elapsedTimeCounter.setVisible(it);
                     taskTitleInput.setVisible(!it);
                 });
 
