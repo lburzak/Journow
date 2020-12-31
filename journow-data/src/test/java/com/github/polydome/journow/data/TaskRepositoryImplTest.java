@@ -1,5 +1,6 @@
 package com.github.polydome.journow.data;
 
+import com.github.polydome.journow.data.database.MemoryDatabase;
 import com.github.polydome.journow.domain.model.Task;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

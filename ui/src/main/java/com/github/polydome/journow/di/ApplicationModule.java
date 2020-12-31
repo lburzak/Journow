@@ -1,7 +1,7 @@
 package com.github.polydome.journow.di;
 
 import com.github.polydome.journow.data.Database;
-import com.github.polydome.journow.data.MemoryDatabase;
+import com.github.polydome.journow.data.database.MemoryDatabase;
 import dagger.Module;
 import dagger.Provides;
 
