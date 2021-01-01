@@ -10,6 +10,8 @@ public class TaskListView extends JPanel {
     @Inject
     public TaskListView(TaskListModel model) {
         JList<Task> list = new JList<>(model);
+        list.setFixedCellHeight(40);
+        list.setFixedCellWidth(280);
         add(list);
     }
 }
