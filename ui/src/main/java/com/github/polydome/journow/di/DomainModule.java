@@ -3,6 +3,7 @@ package com.github.polydome.journow.di;
 import com.github.polydome.journow.data.Database;
 import com.github.polydome.journow.data.SessionRepositoryImpl;
 import com.github.polydome.journow.data.TaskRepositoryImpl;
+import com.github.polydome.journow.data.event.DataEventBus;
 import com.github.polydome.journow.domain.controller.Tracker;
 import com.github.polydome.journow.domain.model.TrackerData;
 import com.github.polydome.journow.domain.repository.SessionRepository;
@@ -17,7 +18,7 @@ import java.util.Optional;
 @Module
 public class DomainModule {
     @Provides
-    TaskRepository taskRepository(Database database) {
+    TaskRepository taskRepository(Database database, DataEventBus dataEventBus) {
         return new TaskRepositoryImpl(database, dataEventBus);
     }
 
