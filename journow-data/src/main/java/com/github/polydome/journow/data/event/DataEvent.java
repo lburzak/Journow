@@ -11,6 +11,18 @@ public class DataEvent {
         this.idStop = idStop;
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    public long getIdStart() {
+        return idStart;
+    }
+
+    public long getIdStop() {
+        return idStop;
+    }
+
     public static DataEvent insertOne(long id) {
         return new DataEvent(Type.INSERT, id, id);
     }

@@ -1,5 +1,7 @@
 package com.github.polydome.journow.data;
 
+import com.github.polydome.journow.data.event.DataEvent;
+import com.github.polydome.journow.data.event.DataEventBus;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.TaskRepository;
 
@@ -13,14 +15,16 @@ import java.util.Optional;
 
 public class TaskRepositoryImpl implements TaskRepository {
     private final Database database;
+    private final DataEventBus dataEventBus;
 
     private PreparedStatement insertNewTask;
     private PreparedStatement insertTask;
     private PreparedStatement countTasks;
     private PreparedStatement findAll;
 
-    public TaskRepositoryImpl(Database database) {
+    public TaskRepositoryImpl(Database database, DataEventBus dataEventBus) {
         this.database = database;
+        this.dataEventBus = dataEventBus;
     }
 
     @Override
@@ -63,6 +67,7 @@ public class TaskRepositoryImpl implements TaskRepository {
                 try (ResultSet generatedKeys = insertNewTask.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         long id = generatedKeys.getLong(1);
+                        dataEventBus.pushTaskEvent(DataEvent.insertOne(id));
                         return new Task(id, task.getTitle());
                     }
                 }

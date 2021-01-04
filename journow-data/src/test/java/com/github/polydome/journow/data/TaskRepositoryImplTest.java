@@ -1,9 +1,13 @@
 package com.github.polydome.journow.data;
 
 import com.github.polydome.journow.data.database.MemoryDatabase;
+import com.github.polydome.journow.data.event.DataEvent;
+import com.github.polydome.journow.data.event.DataEventBus;
 import com.github.polydome.journow.domain.model.Task;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -12,11 +16,14 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class TaskRepositoryImplTest {
     MemoryDatabase database = new MemoryDatabase();
-    TaskRepositoryImpl SUT = new TaskRepositoryImpl(database);
+    DataEventBus dataEventBus = mock(DataEventBus.class);
+    TaskRepositoryImpl SUT = new TaskRepositoryImpl(database, dataEventBus);
 
     @Test
     public void findById_taskNotExists_returnsEmpty() throws SQLException {
@@ -140,5 +147,19 @@ public class TaskRepositoryImplTest {
                 new Task(1, "test task 1"),
                 new Task(2, "test task 2")
         ));
+    }
+
+    @Test
+    void insert_taskInserted_dispatchesEvent() {
+        database.init();
+        SUT.insert(new Task(0, "test task 1"));
+
+        ArgumentCaptor<DataEvent> eventCpt = ArgumentCaptor.forClass(DataEvent.class);
+        verify(dataEventBus, Mockito.times(1)).pushTaskEvent(eventCpt.capture());
+
+        DataEvent actual = eventCpt.getValue();
+        assertThat(actual.getType(), equalTo(DataEvent.Type.INSERT));
+        assertThat(actual.getIdStart(), equalTo(1L));
+        assertThat(actual.getIdStop(), equalTo(1L));
     }
 }

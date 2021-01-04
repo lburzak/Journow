@@ -18,7 +18,7 @@ import java.util.Optional;
 public class DomainModule {
     @Provides
     TaskRepository taskRepository(Database database) {
-        return new TaskRepositoryImpl(database);
+        return new TaskRepositoryImpl(database, dataEventBus);
     }
 
     @Provides
