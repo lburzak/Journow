@@ -1,5 +1,7 @@
 package com.github.polydome.journow.di;
 
+import com.github.polydome.journow.data.event.DataEvent;
+import com.github.polydome.journow.data.event.DataEventBus;
 import dagger.Module;
 import dagger.Provides;
 import io.reactivex.rxjava3.core.Observable;
@@ -13,5 +15,11 @@ public class PresentationModule {
     @Named("TimerUpdateInterval")
     Observable<Long> timerUpdateInterval() {
         return Observable.interval(100, TimeUnit.MILLISECONDS);
+    }
+
+    @Provides
+    @Named("TaskDataEvents")
+    Observable<DataEvent> taskDataEvents(DataEventBus dataEventBus) {
+        return dataEventBus.taskEvents();
     }
 }
