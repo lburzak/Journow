@@ -11,9 +11,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -70,6 +72,42 @@ class SessionRepositoryImplTest {
         }
     }
 
+    @Test
+    void findAll_databaseNotReady_throwsIllegalStateException() {
+        Exception exception = assertThrows(IllegalStateException.class, () -> SUT.findAll());
+
+        assertThat(exception.getMessage(), equalTo("Database is not ready"));
+    }
+
+    @Test
+    void findAll_tasksInDatabase_returnsTasksList() throws SQLException {
+        database.init();
+
+        Task task = createTask();
+
+        Instant start = Instant.ofEpochMilli(125500000);
+        Instant end = start.plusMillis(15000);
+
+        var stmt = database.getConnection().prepareStatement("insert into task (task_id, title) values (?, ?)");
+        stmt.setLong(1, task.getId());
+        stmt.setString(2, task.getTitle());
+        stmt.execute();
+
+        Session session1 = new Session(0, start, end, task);
+        Session session2 = new Session(0, start, end, task);
+
+        SUT.insert(session1);
+        SUT.insert(session2);
+
+        List<Session> sessions = SUT.findAll();
+
+        assertThat(sessions.size(), equalTo(2));
+        assertThat(sessions, hasItems(
+                new Session(1, start, end, task),
+                new Session(2, start, end, task)
+        ));
+    }
+
     Task createTask() {
         return new Task(2, "Test task");
     }
@@ -85,6 +123,4 @@ class SessionRepositoryImplTest {
 
         return new Session(id, startDate, endDate, task);
     }
-
-
 }
