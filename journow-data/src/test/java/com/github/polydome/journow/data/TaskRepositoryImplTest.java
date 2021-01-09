@@ -150,7 +150,7 @@ public class TaskRepositoryImplTest {
     }
 
     @Test
-    void insert_taskInserted_dispatchesEvent() {
+    void insert_taskWithoutIdInserted_dispatchesEvent() {
         database.init();
         SUT.insert(new Task(0, "test task 1"));
 
@@ -161,5 +161,19 @@ public class TaskRepositoryImplTest {
         assertThat(actual.getType(), equalTo(DataEvent.Type.INSERT));
         assertThat(actual.getIdStart(), equalTo(1L));
         assertThat(actual.getIdStop(), equalTo(1L));
+    }
+
+    @Test
+    void insert_taskWithIdInserted_dispatchesEvent() {
+        database.init();
+        SUT.insert(new Task(12, "test task 1"));
+
+        ArgumentCaptor<DataEvent> eventCpt = ArgumentCaptor.forClass(DataEvent.class);
+        verify(dataEventBus, Mockito.times(1)).pushTaskEvent(eventCpt.capture());
+
+        DataEvent actual = eventCpt.getValue();
+        assertThat(actual.getType(), equalTo(DataEvent.Type.INSERT));
+        assertThat(actual.getIdStart(), equalTo(12L));
+        assertThat(actual.getIdStop(), equalTo(12L));
     }
 }
