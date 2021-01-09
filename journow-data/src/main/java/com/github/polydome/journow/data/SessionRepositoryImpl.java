@@ -1,5 +1,7 @@
 package com.github.polydome.journow.data;
 
+import com.github.polydome.journow.data.event.DataEvent;
+import com.github.polydome.journow.data.event.DataEventBus;
 import com.github.polydome.journow.domain.model.Session;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.SessionRepository;
@@ -13,13 +15,15 @@ import java.util.List;
 
 public class SessionRepositoryImpl implements SessionRepository {
     private final Database database;
+    private final DataEventBus dataEventBus;
 
     private PreparedStatement insertSession;
     private PreparedStatement insertNewSession;
     private PreparedStatement selectAll;
 
-    public SessionRepositoryImpl(Database database) {
+    public SessionRepositoryImpl(Database database, DataEventBus dataEventBus) {
         this.database = database;
+        this.dataEventBus = dataEventBus;
     }
 
     @Override
@@ -28,6 +32,8 @@ public class SessionRepositoryImpl implements SessionRepository {
             throw new IllegalStateException("Database is not ready");
 
         try {
+            long insertedId = 0;
+
             if (session.getId() == 0) {
                 if (insertNewSession == null)
                     insertNewSession = database.getConnection().prepareStatement("insert into session (task_id, start_date, end_date) values (?, ?, ?)");
@@ -35,8 +41,12 @@ public class SessionRepositoryImpl implements SessionRepository {
                 insertNewSession.setLong(1, session.getTask().getId());
                 insertNewSession.setTimestamp(2, Timestamp.from(session.getStartedAt()));
                 insertNewSession.setTimestamp(3, Timestamp.from(session.getEndedAt()));
-
                 insertNewSession.execute();
+
+                try (ResultSet generatedKeys = insertNewSession.getGeneratedKeys()) {
+                    if (generatedKeys.next())
+                        insertedId = generatedKeys.getLong(1);
+                }
             } else {
                 if (insertSession == null)
                     insertSession = database.getConnection().prepareStatement("insert into session (session_id, task_id, start_date, end_date) values (?, ?, ?, ?)");
@@ -46,8 +56,14 @@ public class SessionRepositoryImpl implements SessionRepository {
                 insertSession.setTimestamp(3, Timestamp.from(session.getStartedAt()));
                 insertSession.setTimestamp(4, Timestamp.from(session.getEndedAt()));
 
-                insertSession.execute();
+                if (insertSession.executeUpdate() > 0) {
+                    insertedId = session.getId();
+                }
             }
+
+            if (insertedId > 0)
+                dataEventBus.pushSessionEvent(DataEvent.insertOne(insertedId));
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

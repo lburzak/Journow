@@ -1,11 +1,15 @@
 package com.github.polydome.journow.data;
 
 import com.github.polydome.journow.data.database.MemoryDatabase;
+import com.github.polydome.journow.data.event.DataEvent;
+import com.github.polydome.journow.data.event.DataEventBus;
 import com.github.polydome.journow.domain.model.Session;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.SessionRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -17,11 +21,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class SessionRepositoryImplTest {
     MemoryDatabase database = new MemoryDatabase();
-    SessionRepository SUT = new SessionRepositoryImpl(database);
+    DataEventBus dataEventBus = mock(DataEventBus.class);
+    SessionRepository SUT = new SessionRepositoryImpl(database, dataEventBus);
 
     @Test
     void findById_databaseNotReady_throwsIllegalStateException() {
@@ -88,10 +95,7 @@ class SessionRepositoryImplTest {
         Instant start = Instant.ofEpochMilli(125500000);
         Instant end = start.plusMillis(15000);
 
-        var stmt = database.getConnection().prepareStatement("insert into task (task_id, title) values (?, ?)");
-        stmt.setLong(1, task.getId());
-        stmt.setString(2, task.getTitle());
-        stmt.execute();
+        insertTask(task);
 
         Session session1 = new Session(0, start, end, task);
         Session session2 = new Session(0, start, end, task);
@@ -122,5 +126,50 @@ class SessionRepositoryImplTest {
         Task task = createTask();
 
         return new Session(id, startDate, endDate, task);
+    }
+
+    @Test
+    void insert_sessionWithoutIdInserted_dispatchesEvent() throws SQLException {
+        database.init();
+        var task = new Task(12, "test task 1");
+        var start = Instant.ofEpochMilli(8300000);
+
+        insertTask(task);
+
+        SUT.insert(new Session(0, start, start.plusMillis(7000), task));
+
+        ArgumentCaptor<DataEvent> eventCpt = ArgumentCaptor.forClass(DataEvent.class);
+        verify(dataEventBus, Mockito.times(1)).pushSessionEvent(eventCpt.capture());
+
+        DataEvent actual = eventCpt.getValue();
+        assertThat(actual.getType(), equalTo(DataEvent.Type.INSERT));
+        assertThat(actual.getIdStart(), equalTo(1L));
+        assertThat(actual.getIdStop(), equalTo(1L));
+    }
+
+    @Test
+    void insert_sessionWithIdInserted_dispatchesEvent() throws SQLException {
+        database.init();
+        var task = new Task(12, "test task 1");
+        var start = Instant.ofEpochMilli(8300000);
+
+        insertTask(task);
+
+        SUT.insert(new Session(48, start, start.plusMillis(7000), task));
+
+        ArgumentCaptor<DataEvent> eventCpt = ArgumentCaptor.forClass(DataEvent.class);
+        verify(dataEventBus, Mockito.times(1)).pushSessionEvent(eventCpt.capture());
+
+        DataEvent actual = eventCpt.getValue();
+        assertThat(actual.getType(), equalTo(DataEvent.Type.INSERT));
+        assertThat(actual.getIdStart(), equalTo(48L));
+        assertThat(actual.getIdStop(), equalTo(48L));
+    }
+
+    private void insertTask(Task task) throws SQLException {
+        var stmt = database.getConnection().prepareStatement("insert into task (task_id, title) values (?, ?)");
+        stmt.setLong(1, task.getId());
+        stmt.setString(2, task.getTitle());
+        stmt.execute();
     }
 }
