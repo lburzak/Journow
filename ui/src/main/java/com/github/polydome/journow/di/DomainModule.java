@@ -23,7 +23,7 @@ public class DomainModule {
     }
 
     @Provides
-    SessionRepository sessionRepository(Database database) {
+    SessionRepository sessionRepository(Database database, DataEventBus dataEventBus) {
         return new SessionRepositoryImpl(database, dataEventBus);
     }
 
