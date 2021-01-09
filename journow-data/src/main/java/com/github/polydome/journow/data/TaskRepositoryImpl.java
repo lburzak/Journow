@@ -77,7 +77,10 @@ public class TaskRepositoryImpl implements TaskRepository {
 
                 insertTask.setLong(1, task.getId());
                 insertTask.setString(2, task.getTitle());
-                insertTask.execute();
+
+                if (insertTask.executeUpdate() > 0) {
+                    dataEventBus.pushTaskEvent(DataEvent.insertOne(task.getId()));
+                }
 
                 return task;
             }
