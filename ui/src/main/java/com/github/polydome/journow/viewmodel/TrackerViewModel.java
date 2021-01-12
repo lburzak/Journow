@@ -3,6 +3,7 @@ package com.github.polydome.journow.viewmodel;
 import com.github.polydome.journow.domain.controller.Tracker;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.TaskRepository;
+import com.github.polydome.journow.ui.tracker.common.FormatUtils;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
@@ -41,8 +42,7 @@ public class TrackerViewModel {
 
     public String millisToReadableDuration(long millis) {
         Duration duration = Duration.ofMillis(millis);
-
-        return String.format("%02d:%02d", duration.toMinutesPart(), duration.toSecondsPart());
+        return FormatUtils.formatDuration(duration);
     }
 
     public void startSession(String title) {
