@@ -20,6 +20,7 @@ public class TaskListView extends JPanel {
         list.setCellRenderer(new TaskCellRenderer());
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         add(list);
+        add(new JScrollPane(list));
     }
 
     private static class TaskCellRenderer extends DefaultListCellRenderer {
