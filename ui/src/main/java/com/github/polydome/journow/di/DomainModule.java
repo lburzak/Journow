@@ -12,6 +12,7 @@ import com.github.polydome.journow.domain.service.TrackerDataStorage;
 import dagger.Module;
 import dagger.Provides;
 
+import javax.inject.Singleton;
 import java.time.Clock;
 import java.util.Optional;
 
@@ -55,12 +56,5 @@ public class DomainModule {
     @Provides
     Clock clock() {
         return Clock.systemDefaultZone();
-    }
-
-    @Provides
-    Tracker tracker(TaskRepository taskRepository, TrackerDataStorage trackerDataStorage, Clock clock, SessionRepository sessionRepository) {
-        return new Tracker(
-                taskRepository, trackerDataStorage, clock, sessionRepository
-        );
     }
 }
