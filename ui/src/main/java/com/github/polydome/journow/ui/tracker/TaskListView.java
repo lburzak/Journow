@@ -6,7 +6,6 @@ import com.github.polydome.journow.ui.popup.TaskPopupMenu;
 
 import javax.inject.Inject;
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -17,17 +16,14 @@ public class TaskListView extends JPanel {
         list.setFixedCellHeight(40);
         list.setFixedCellWidth(280);
         list.addMouseListener(new TaskCellPopupListener(taskPopupMenu, model));
-        list.setCellRenderer(new TaskCellRenderer());
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        list.addListSelectionListener(listSelectionEvent -> {
+            if (!listSelectionEvent.getValueIsAdjusting()) {
+                System.out.println(list.getModel().getElementAt(list.getSelectedIndex()).getTitle());
+            }
+        });
         add(list);
         add(new JScrollPane(list));
-    }
-
-    private static class TaskCellRenderer extends DefaultListCellRenderer {
-        @Override
-        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            return new JLabel(value.toString());
-        }
     }
 
     private static class TaskCellPopupListener extends MouseAdapter {

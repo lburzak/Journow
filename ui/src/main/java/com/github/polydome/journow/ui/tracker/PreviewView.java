@@ -1,9 +1,13 @@
 package com.github.polydome.journow.ui.tracker;
 
+import com.github.polydome.journow.ui.preview.TaskPreviewPane;
+
+import javax.inject.Inject;
 import javax.swing.*;
 
 public class PreviewView extends JPanel {
-    public PreviewView() {
-        add(new JLabel("This is task/session preview"));
+    @Inject
+    public PreviewView(TaskPreviewPane taskPreviewPane) {
+        add(taskPreviewPane);
     }
 }
