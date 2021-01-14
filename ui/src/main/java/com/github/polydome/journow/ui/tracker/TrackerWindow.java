@@ -8,9 +8,11 @@ import java.awt.*;
 
 public class TrackerWindow extends JFrame {
     private final BorderLayout layout = new BorderLayout();
+    private final PreviewView previewView;
 
     @Inject
-    public TrackerWindow(TrackerViewModel trackerViewModel, ListsPager listsPager) {
+    public TrackerWindow(TrackerViewModel trackerViewModel, ListsPager listsPager, PreviewView previewView) {
+        this.previewView = previewView;
         createWindow();
         createContentView(trackerViewModel, listsPager);
     }
@@ -29,7 +31,7 @@ public class TrackerWindow extends JFrame {
         TrackerBar mainPanel = new TrackerBar(viewModel);
         getContentPane().add(mainPanel, BorderLayout.PAGE_END);
         getContentPane().add(listsPager, BorderLayout.LINE_START);
-        getContentPane().add(new PreviewView(), BorderLayout.CENTER);
+        getContentPane().add(previewView, BorderLayout.CENTER);
 
         mainPanel.onCreate();
     }
