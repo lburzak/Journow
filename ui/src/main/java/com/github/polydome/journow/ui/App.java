@@ -17,12 +17,12 @@ public class App {
         // Enable Anti-aliasing
         System.setProperty("awt.useSystemAAFontSettings", "lcd");
 
-        try {
-            // FIXME Implement fallback L&F
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            // FIXME Implement fallback L&F
+//            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+//            e.printStackTrace();
+//        }
 
         applicationComponent.createPresentationComponent()
                 .trackerWindow()
