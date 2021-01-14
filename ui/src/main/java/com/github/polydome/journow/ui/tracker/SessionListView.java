@@ -17,6 +17,7 @@ public class SessionListView extends JPanel {
         list.setFixedCellWidth(280);
         list.setCellRenderer(new SessionCellRenderer());
         add(list);
+        add(new JScrollPane(list));
     }
 
     private static class SessionCellRenderer extends DefaultListCellRenderer {
