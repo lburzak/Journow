@@ -3,6 +3,7 @@ package com.github.polydome.journow.ui.tracker;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.ui.listmodel.TaskListModel;
 import com.github.polydome.journow.ui.popup.TaskPopupMenu;
+import com.github.polydome.journow.ui.preview.PreviewModel;
 
 import javax.inject.Inject;
 import javax.swing.*;
@@ -11,7 +12,7 @@ import java.awt.event.MouseEvent;
 
 public class TaskListView extends JPanel {
     @Inject
-    public TaskListView(TaskListModel model, TaskPopupMenu taskPopupMenu) {
+    public TaskListView(TaskListModel model, TaskPopupMenu taskPopupMenu, PreviewModel previewModel) {
         JList<Task> list = new JList<>(model);
         list.setFixedCellHeight(40);
         list.setFixedCellWidth(280);
@@ -19,7 +20,10 @@ public class TaskListView extends JPanel {
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.addListSelectionListener(listSelectionEvent -> {
             if (!listSelectionEvent.getValueIsAdjusting()) {
-                System.out.println(list.getModel().getElementAt(list.getSelectedIndex()).getTitle());
+                Task selectedTask = list.getModel()
+                        .getElementAt(list.getSelectedIndex());
+
+                previewModel.previewTask(selectedTask);
             }
         });
         add(list);

@@ -7,6 +7,7 @@ import com.github.polydome.journow.domain.controller.Tracker;
 import com.github.polydome.journow.domain.repository.SessionRepository;
 import com.github.polydome.journow.domain.repository.TaskRepository;
 import com.github.polydome.journow.domain.service.TrackerDataStorage;
+import com.github.polydome.journow.ui.preview.PreviewModel;
 import dagger.Module;
 import dagger.Provides;
 
@@ -33,5 +34,11 @@ public class ApplicationModule {
         return new Tracker(
                 taskRepository, trackerDataStorage, clock, sessionRepository
         );
+    }
+
+    @Provides
+    @Singleton
+    PreviewModel previewModel() {
+        return new PreviewModel();
     }
 }
