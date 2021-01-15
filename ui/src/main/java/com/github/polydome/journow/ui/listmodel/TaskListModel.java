@@ -18,18 +18,31 @@ public class TaskListModel extends AbstractListModel<Task> {
     public TaskListModel(TaskRepository taskRepository, @Named("TaskDataEvents") Observable<DataEvent> events) {
         this.taskRepository = taskRepository;
         tasks = taskRepository.findAll();
+
         events.subscribe(ev -> {
-            if (ev.getType() == DataEvent.Type.INSERT) {
-                List<Task> freshTasks = taskRepository.findAll();
-                tasks.clear();
-                tasks.addAll(freshTasks);
-                var insertedTask = tasks.stream().filter(task -> task.getId() == ev.getIdStart()).findFirst();
-                if (insertedTask.isPresent()) {
-                    var index = tasks.indexOf(insertedTask.get());
-                    fireIntervalAdded(this, index, index);
-                } else {
-                    System.err.println("Inserted task not found");
-                }
+            List<Task> freshTasks = taskRepository.findAll();
+            tasks.clear();
+            tasks.addAll(freshTasks);
+
+            switch (ev.getType()) {
+                case INSERT:
+                    var insertedTask = tasks.stream().filter(task -> task.getId() == ev.getIdStart()).findFirst();
+                    if (insertedTask.isPresent()) {
+                        var index = tasks.indexOf(insertedTask.get());
+                        fireIntervalAdded(this, index, index);
+                    } else {
+                        System.err.println("Inserted task not found");
+                    }
+                    break;
+                case CHANGE:
+                    var updatedTask = tasks.stream().filter(task -> task.getId() == ev.getIdStart()).findFirst();
+                    if (updatedTask.isPresent()) {
+                        var index = tasks.indexOf(updatedTask.get());
+                        fireContentsChanged(this, index, index);
+                    } else {
+                        System.err.println("Updated task not found");
+                    }
+                    break;
             }
         });
     }
