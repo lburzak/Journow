@@ -3,6 +3,7 @@ package com.github.polydome.journow.data;
 import com.github.polydome.journow.data.database.MemoryDatabase;
 import com.github.polydome.journow.data.event.DataEvent;
 import com.github.polydome.journow.data.event.DataEventBus;
+import com.github.polydome.journow.domain.exception.NoSuchTaskException;
 import com.github.polydome.journow.domain.model.Task;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -175,5 +176,34 @@ public class TaskRepositoryImplTest {
         assertThat(actual.getType(), equalTo(DataEvent.Type.INSERT));
         assertThat(actual.getIdStart(), equalTo(12L));
         assertThat(actual.getIdStop(), equalTo(12L));
+    }
+
+    @Test
+    void update_taskNotExists_throwsException() {
+        database.init();
+
+        assertThrows(NoSuchTaskException.class, () -> {
+            SUT.update(new Task(2, "test task"));
+        });
+    }
+
+    @Test
+    void update_taskExists_updatesTask() throws SQLException {
+        database.init();
+
+        database.getConnection()
+                .prepareStatement("insert into task (title) values ('test task')")
+                .executeUpdate();
+
+        SUT.update(new Task(1, "test task edited"));
+
+        try (var rs = database.getConnection()
+                .prepareStatement("select task_id, title from task where task_id = 1")
+                .executeQuery()) {
+            assertThat(rs.next(), equalTo(true));
+            assertThat(rs.getString(2), equalTo("test task edited"));
+        }
+
+
     }
 }
