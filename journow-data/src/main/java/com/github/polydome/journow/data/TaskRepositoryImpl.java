@@ -2,6 +2,7 @@ package com.github.polydome.journow.data;
 
 import com.github.polydome.journow.data.event.DataEvent;
 import com.github.polydome.journow.data.event.DataEventBus;
+import com.github.polydome.journow.domain.exception.NoSuchTaskException;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.TaskRepository;
 
@@ -21,6 +22,8 @@ public class TaskRepositoryImpl implements TaskRepository {
     private PreparedStatement insertTask;
     private PreparedStatement countTasks;
     private PreparedStatement findAll;
+    private PreparedStatement findOne;
+    private PreparedStatement updateTask;
 
     public TaskRepositoryImpl(Database database, DataEventBus dataEventBus) {
         this.database = database;
@@ -138,6 +141,38 @@ public class TaskRepositoryImpl implements TaskRepository {
         }
 
         return List.of();
+    }
+
+    @Override
+    public void update(Task task) {
+        try {
+            if (!taskExists(task.getId()))
+                throw new NoSuchTaskException(task.getId());
+            else {
+                if (updateTask == null)
+                    updateTask = getConnection().prepareStatement("update task set title = ? where task_id = ?");
+
+                updateTask.setString(1, task.getTitle());
+                updateTask.setLong(2, task.getId());
+
+                updateTask.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private boolean taskExists(long id) throws SQLException {
+        if (findOne == null)
+            findOne = getConnection().prepareStatement("select * from task where task_id = ?");
+
+        findOne.setLong(1, id);
+
+        try (var rs = findOne.executeQuery()) {
+            return rs.next();
+        }
     }
 
     private Connection getConnection() throws SQLException {
