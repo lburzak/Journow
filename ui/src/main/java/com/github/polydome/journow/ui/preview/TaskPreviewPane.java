@@ -17,6 +17,7 @@ public class TaskPreviewPane extends JPanel {
 
         GridBagConstraints constraints = new GridBagConstraints();
 
+        constraints.insets = new Insets(10, 10, 10, 10);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.weightx = 0.2;
         constraints.anchor = GridBagConstraints.CENTER;
