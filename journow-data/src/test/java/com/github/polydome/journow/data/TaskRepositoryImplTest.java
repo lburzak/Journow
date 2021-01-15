@@ -17,6 +17,7 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -203,7 +204,24 @@ public class TaskRepositoryImplTest {
             assertThat(rs.next(), equalTo(true));
             assertThat(rs.getString(2), equalTo("test task edited"));
         }
+    }
 
+    @Test
+    void update_taskExists_emitsUpdateEvent() throws SQLException {
+        database.init();
 
+        database.getConnection()
+                .prepareStatement("insert into task (title) values ('test task')")
+                .executeUpdate();
+
+        SUT.update(new Task(1, "test task edited"));
+
+        var cpt = ArgumentCaptor.forClass(DataEvent.class);
+        verify(dataEventBus).pushTaskEvent(cpt.capture());
+
+        var event = cpt.getValue();
+        assertThat(event.getType(), equalTo(DataEvent.Type.CHANGE));
+        assertThat(event.getIdStart(), equalTo(event.getIdStop()));
+        assertThat(event.getIdStart(), equalTo(1L));
     }
 }

@@ -155,7 +155,8 @@ public class TaskRepositoryImpl implements TaskRepository {
                 updateTask.setString(1, task.getTitle());
                 updateTask.setLong(2, task.getId());
 
-                updateTask.executeUpdate();
+                if (updateTask.executeUpdate() > 0)
+                    dataEventBus.pushTaskEvent(DataEvent.updateOne(task.getId()));
             }
         } catch (SQLException e) {
             e.printStackTrace();
