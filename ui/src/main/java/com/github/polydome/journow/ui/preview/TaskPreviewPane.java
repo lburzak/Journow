@@ -1,16 +1,21 @@
 package com.github.polydome.journow.ui.preview;
 
 import com.github.polydome.journow.domain.model.Task;
+import com.github.polydome.journow.domain.repository.TaskRepository;
 
 import javax.inject.Inject;
 import javax.swing.*;
 import java.awt.*;
 
-public class TaskPreviewPane extends JPanel {
+public class TaskPreviewPane extends JPanel implements EntityEditorForm {
     private final JTextField titleField = new JTextField("Hello there");
+    private final TaskRepository taskRepository;
+
+    private long previewedTaskId = -1;
 
     @Inject
-    public TaskPreviewPane(PreviewModel model) {
+    public TaskPreviewPane(PreviewModel model, TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
         JLabel titleLabel = new JLabel("Title");
         GridBagLayout layout = new GridBagLayout();
         setLayout(layout);
@@ -37,6 +42,12 @@ public class TaskPreviewPane extends JPanel {
     }
 
     public void setTask(Task task) {
+        previewedTaskId = task.getId();
         titleField.setText(task.getTitle());
+    }
+
+    @Override
+    public void submit() {
+        taskRepository.update(new Task(previewedTaskId, titleField.getText()));
     }
 }
