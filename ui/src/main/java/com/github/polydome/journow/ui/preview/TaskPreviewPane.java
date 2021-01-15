@@ -7,19 +7,28 @@ import javax.swing.*;
 import java.awt.*;
 
 public class TaskPreviewPane extends JPanel {
-    private final JTextField titleField = new JTextField();
+    private final JTextField titleField = new JTextField("Hello there");
 
     @Inject
     public TaskPreviewPane(PreviewModel model) {
         JLabel titleLabel = new JLabel("Title");
-        setLayout(new GridBagLayout());
+        GridBagLayout layout = new GridBagLayout();
+        setLayout(layout);
+
         GridBagConstraints constraints = new GridBagConstraints();
-        constraints.weightx = 1;
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.weightx = 0.2;
+        constraints.anchor = GridBagConstraints.CENTER;
+
         add(titleLabel, constraints);
+        constraints.weightx = 0.8;
         add(titleField, constraints);
+
         model.previewObjects().subscribe(obj -> {
-            if (obj instanceof Task)
+            if (obj instanceof Task) {
                 setTask((Task) obj);
+            }
             else {
                 throw new UnsupportedOperationException("Unsupported preview object");
             }
