@@ -9,11 +9,17 @@ import java.awt.*;
 public class PreviewView extends JPanel {
     @Inject
     public PreviewView(TaskPreviewPane taskPreviewPane) {
-        setLayout(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.insets = new Insets(20, 20, 20, 20);
-        constraints.weightx = 1;
-        add(taskPreviewPane, constraints);
+        setLayout(new BorderLayout());
+        add(taskPreviewPane, BorderLayout.CENTER);
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.BOTH;
+        c.weightx = 0.8;
+        bottomPanel.add(new JPanel(), c);
+        c.weightx = 0.2;
+        c.insets = new Insets(10, 10, 0, 10);
+        bottomPanel.add(new Button("Save"), c);
+        add(bottomPanel, BorderLayout.PAGE_END);
     }
 }
