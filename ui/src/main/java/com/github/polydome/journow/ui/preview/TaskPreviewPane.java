@@ -48,6 +48,6 @@ public class TaskPreviewPane extends JPanel implements EntityEditorForm {
 
     @Override
     public void submit() {
-        taskRepository.update(new Task(previewedTaskId, titleField.getText(), project));
+        taskRepository.update(new Task(previewedTaskId, titleField.getText(), null));
     }
 }
