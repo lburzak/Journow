@@ -9,6 +9,7 @@ import java.awt.*;
 
 public class TaskPreviewPane extends JPanel implements EntityEditorForm {
     private final JTextField titleField = new JTextField("Hello there");
+    private final JComboBox<String> projectField = new JComboBox<>();
     private final TaskRepository taskRepository;
 
     private long previewedTaskId = -1;
@@ -17,6 +18,10 @@ public class TaskPreviewPane extends JPanel implements EntityEditorForm {
     public TaskPreviewPane(PreviewModel model, TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
         JLabel titleLabel = new JLabel("Title");
+        JLabel projectLabel = new JLabel("Project");
+
+        projectField.setEditable(true);
+
         GridBagLayout layout = new GridBagLayout();
         setLayout(layout);
 
@@ -24,12 +29,20 @@ public class TaskPreviewPane extends JPanel implements EntityEditorForm {
 
         constraints.insets = new Insets(10, 10, 10, 10);
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.weightx = 0.2;
         constraints.anchor = GridBagConstraints.CENTER;
 
+        constraints.weightx = 0.2;
         add(titleLabel, constraints);
+
         constraints.weightx = 0.8;
         add(titleField, constraints);
+
+        constraints.gridy = 1;
+        constraints.weightx = 0.2;
+        add(projectLabel, constraints);
+
+        constraints.weightx = 0.8;
+        add(projectField, constraints);
 
         model.previewObjects().subscribe(obj -> {
             if (obj instanceof Task) {
