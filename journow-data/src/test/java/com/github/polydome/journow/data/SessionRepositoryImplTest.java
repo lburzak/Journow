@@ -113,7 +113,7 @@ class SessionRepositoryImplTest {
     }
 
     Task createTask() {
-        return new Task(2, "Test task");
+        return new Task(2, "Test task", project);
     }
 
     Session createSession() {
@@ -131,7 +131,7 @@ class SessionRepositoryImplTest {
     @Test
     void insert_sessionWithoutIdInserted_dispatchesEvent() throws SQLException {
         database.init();
-        var task = new Task(12, "test task 1");
+        var task = new Task(12, "test task 1", project);
         var start = Instant.ofEpochMilli(8300000);
 
         insertTask(task);
@@ -150,7 +150,7 @@ class SessionRepositoryImplTest {
     @Test
     void insert_sessionWithIdInserted_dispatchesEvent() throws SQLException {
         database.init();
-        var task = new Task(12, "test task 1");
+        var task = new Task(12, "test task 1", project);
         var start = Instant.ofEpochMilli(8300000);
 
         insertTask(task);

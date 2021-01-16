@@ -5,10 +5,12 @@ import java.util.Objects;
 public class Task {
     private final String title;
     private final long id;
+    private final Project project;
 
-    public Task(long id, String title) {
+    public Task(long id, String title, Project project) {
         this.title = title;
         this.id = id;
+        this.project = project;
     }
 
     public String getTitle() {

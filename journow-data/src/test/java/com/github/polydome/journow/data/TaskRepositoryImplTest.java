@@ -36,7 +36,7 @@ public class TaskRepositoryImplTest {
 
     @Test
     public void findById_taskExists_returnsTask() throws SQLException {
-        Task expected = new Task(12, "Test task");
+        Task expected = new Task(12, "Test task", project);
 
         database.init();
         try (var stmt = database.getConnection().prepareStatement("insert into task (task_id, title) values (? ,?)")) {
@@ -61,7 +61,7 @@ public class TaskRepositoryImplTest {
 
     @Test
     void insert_taskNotExists_insertsTask() throws SQLException {
-        Task task = new Task(2, "test task");
+        Task task = new Task(2, "test task", project);
 
         database.init();
         SUT.insert(task);
@@ -84,7 +84,7 @@ public class TaskRepositoryImplTest {
 
     @Test
     void insert_taskNotExists_returnsCreatedTask() throws SQLException {
-        Task task = new Task(0, "test task");
+        Task task = new Task(0, "test task", project);
 
         database.init();
         Task actual = SUT.insert(task);
@@ -95,7 +95,7 @@ public class TaskRepositoryImplTest {
 
     @Test
     void insert_databaseNotReady_throwsIllegalStateException() {
-        Exception exception = assertThrows(IllegalStateException.class, () -> SUT.insert(new Task(0, "test task")));
+        Exception exception = assertThrows(IllegalStateException.class, () -> SUT.insert(new Task(0, "test task", project)));
 
         assertThat(exception.getMessage(), equalTo("Database is not ready"));
     }
@@ -120,8 +120,8 @@ public class TaskRepositoryImplTest {
     void count_tasksInDatabase_returnsTasksCount() {
         database.init();
 
-        SUT.insert(new Task(0, "test task 1"));
-        SUT.insert(new Task(0, "test task 2"));
+        SUT.insert(new Task(0, "test task 1", project));
+        SUT.insert(new Task(0, "test task 2", project));
 
         int count = SUT.count();
 
@@ -139,22 +139,22 @@ public class TaskRepositoryImplTest {
     void findAll_tasksInDatabase_returnsTasksList() {
         database.init();
 
-        SUT.insert(new Task(0, "test task 1"));
-        SUT.insert(new Task(0, "test task 2"));
+        SUT.insert(new Task(0, "test task 1", project));
+        SUT.insert(new Task(0, "test task 2", project));
 
         List<Task> tasks = SUT.findAll();
 
         assertThat(tasks.size(), equalTo(2));
         assertThat(tasks, hasItems(
-                new Task(1, "test task 1"),
-                new Task(2, "test task 2")
+                new Task(1, "test task 1", project),
+                new Task(2, "test task 2", project)
         ));
     }
 
     @Test
     void insert_taskWithoutIdInserted_dispatchesEvent() {
         database.init();
-        SUT.insert(new Task(0, "test task 1"));
+        SUT.insert(new Task(0, "test task 1", project));
 
         ArgumentCaptor<DataEvent> eventCpt = ArgumentCaptor.forClass(DataEvent.class);
         verify(dataEventBus, Mockito.times(1)).pushTaskEvent(eventCpt.capture());
@@ -168,7 +168,7 @@ public class TaskRepositoryImplTest {
     @Test
     void insert_taskWithIdInserted_dispatchesEvent() {
         database.init();
-        SUT.insert(new Task(12, "test task 1"));
+        SUT.insert(new Task(12, "test task 1", project));
 
         ArgumentCaptor<DataEvent> eventCpt = ArgumentCaptor.forClass(DataEvent.class);
         verify(dataEventBus, Mockito.times(1)).pushTaskEvent(eventCpt.capture());
@@ -184,7 +184,7 @@ public class TaskRepositoryImplTest {
         database.init();
 
         assertThrows(NoSuchTaskException.class, () -> {
-            SUT.update(new Task(2, "test task"));
+            SUT.update(new Task(2, "test task", project));
         });
     }
 
@@ -196,7 +196,7 @@ public class TaskRepositoryImplTest {
                 .prepareStatement("insert into task (title) values ('test task')")
                 .executeUpdate();
 
-        SUT.update(new Task(1, "test task edited"));
+        SUT.update(new Task(1, "test task edited", project));
 
         try (var rs = database.getConnection()
                 .prepareStatement("select task_id, title from task where task_id = 1")
@@ -214,7 +214,7 @@ public class TaskRepositoryImplTest {
                 .prepareStatement("insert into task (title) values ('test task')")
                 .executeUpdate();
 
-        SUT.update(new Task(1, "test task edited"));
+        SUT.update(new Task(1, "test task edited", project));
 
         var cpt = ArgumentCaptor.forClass(DataEvent.class);
         verify(dataEventBus).pushTaskEvent(cpt.capture());

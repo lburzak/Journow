@@ -46,7 +46,7 @@ public class TrackerViewModel {
     }
 
     public void startSession(String title) {
-        Task task = taskRepository.insert(new Task(0, title));
+        Task task = taskRepository.insert(new Task(0, title, project));
 
         tracker.start(task.getId());
     }

@@ -86,7 +86,7 @@ public class SessionRepositoryImpl implements SessionRepository {
                             rows.getLong(1),
                             rows.getTimestamp(2).toInstant(),
                             rows.getTimestamp(3).toInstant(),
-                            new Task(rows.getLong(4), rows.getString(5))
+                            new Task(rows.getLong(4), rows.getString(5), project)
                     ));
                 }
 
