@@ -1,6 +1,7 @@
 package com.github.polydome.journow.domain.usecase;
 
 import com.github.polydome.journow.domain.exception.NoSuchTaskException;
+import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.model.Session;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.SessionRepository;
@@ -14,6 +15,7 @@ import org.mockito.Mockito;
 import java.time.Instant;
 import java.util.Optional;
 
+import static com.github.polydome.journow.test.TaskFactory.createTask;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -45,7 +47,7 @@ public class LogSessionUseCaseTest {
     @Test
     public void execute_taskExists_insertsSession() {
         int TASK_ID = 15;
-        Task task = new Task(TASK_ID, "Test task");
+        Task task = createTask(TASK_ID, "Test task");
         Instant startedAt = Instant.now().minusSeconds(30);
         Instant endedAt = Instant.now();
 
@@ -66,7 +68,7 @@ public class LogSessionUseCaseTest {
     @Test
     public void execute_endDatePrecedesStartDate_throwsIllegalArgumentException() {
         when(taskRepository.findById(15))
-                .thenReturn(Optional.of(new Task(15, "test")));
+                .thenReturn(Optional.of(createTask(15, "test")));
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 SUT.execute(Instant.now(), Instant.now().minusSeconds(50), 15));

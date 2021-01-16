@@ -45,8 +45,8 @@ public class TaskRepositoryImpl implements TaskRepository {
                 }
                 return Optional.of(new Task(
                         taskResultSet.getLong("task_id"),
-                        taskResultSet.getString("title")
-                ));
+                        taskResultSet.getString("title"),
+                        project));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -71,7 +71,7 @@ public class TaskRepositoryImpl implements TaskRepository {
                     if (generatedKeys.next()) {
                         long id = generatedKeys.getLong(1);
                         dataEventBus.pushTaskEvent(DataEvent.insertOne(id));
-                        return new Task(id, task.getTitle());
+                        return new Task(id, task.getTitle(), project);
                     }
                 }
             } else {
@@ -130,7 +130,7 @@ public class TaskRepositoryImpl implements TaskRepository {
 
                 while (rs.next()) {
                     tasks.add(
-                            new Task(rs.getLong(1), rs.getString(2))
+                            new Task(rs.getLong(1), rs.getString(2), project)
                     );
                 }
 

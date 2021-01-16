@@ -8,7 +8,6 @@ import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.model.TrackerData;
 import com.github.polydome.journow.domain.repository.SessionRepository;
 import com.github.polydome.journow.domain.repository.TaskRepository;
-import com.github.polydome.journow.domain.service.TrackerDataStorage;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.observers.TestObserver;
 import org.junit.jupiter.api.Test;
@@ -20,10 +19,10 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.Optional;
 
+import static com.github.polydome.journow.test.TaskFactory.createTask;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -52,7 +51,7 @@ public class TrackerTest {
         Instant now = Instant.ofEpochMilli(12000000);
         long TASK_ID = 15;
         when(clock.instant()).thenReturn(now);
-        when(taskRepository.findById(TASK_ID)).thenReturn(Optional.of(new Task(TASK_ID, "test task")));
+        when(taskRepository.findById(TASK_ID)).thenReturn(Optional.of(createTask(TASK_ID, "test task")));
 
         // when
         SUT.start(TASK_ID);
@@ -69,7 +68,7 @@ public class TrackerTest {
         // given
         Instant start = Instant.ofEpochMilli(600000);
         Instant now = Instant.ofEpochMilli(12000000);
-        Task task = new Task(15, "test task");
+        Task task = createTask(15, "test task");
         when(clock.instant()).thenReturn(start, now);
         when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
 
@@ -90,7 +89,7 @@ public class TrackerTest {
 
     @Test
     public void stop_trackerRunning_clearsData() {
-        Task task = new Task(15, "test task");
+        Task task = createTask(15, "test task");
         when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
 
         SUT.start(task.getId());
@@ -106,7 +105,7 @@ public class TrackerTest {
         Instant now = Instant.ofEpochMilli(12000000);
         long TASK_ID = 15;
         when(clock.instant()).thenReturn(start, now);
-        when(taskRepository.findById(TASK_ID)).thenReturn(Optional.of(new Task(TASK_ID, "test task")));
+        when(taskRepository.findById(TASK_ID)).thenReturn(Optional.of(createTask(TASK_ID, "test task")));
 
         // when
         SUT.start(TASK_ID);
@@ -140,7 +139,7 @@ public class TrackerTest {
     public void currentTask_trackerStarted_emitsStartedTask() {
         // given
         Instant now = Instant.ofEpochMilli(12000000);
-        Task task = new Task(15, "test task");
+        Task task = createTask(15, "test task");
         when(clock.instant()).thenReturn(now);
         when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
 
@@ -157,7 +156,7 @@ public class TrackerTest {
         Instant start = Instant.now();
         Instant firstTick = start.plusMillis(600);
         Instant secondTick = start.plusMillis(700);
-        Task task = new Task(15, "test task");
+        Task task = createTask(15, "test task");
 
         when(clock.instant()).thenReturn(start, firstTick, secondTick, start.plusMillis(800));
         when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
@@ -180,7 +179,7 @@ public class TrackerTest {
         Instant now = Instant.ofEpochMilli(12000000);
         long TASK_ID = 15;
         when(clock.instant()).thenReturn(now);
-        when(taskRepository.findById(TASK_ID)).thenReturn(Optional.of(new Task(TASK_ID, "test task")));
+        when(taskRepository.findById(TASK_ID)).thenReturn(Optional.of(createTask(TASK_ID, "test task")));
 
         SUT.start(TASK_ID);
         SUT.isRunning().test().assertValue(true);
@@ -191,7 +190,7 @@ public class TrackerTest {
         Instant now = Instant.ofEpochMilli(12000000);
         long TASK_ID = 15;
         when(clock.instant()).thenReturn(now);
-        when(taskRepository.findById(TASK_ID)).thenReturn(Optional.of(new Task(TASK_ID, "test task")));
+        when(taskRepository.findById(TASK_ID)).thenReturn(Optional.of(createTask(TASK_ID, "test task")));
 
         SUT.start(TASK_ID);
         SUT.stop();
