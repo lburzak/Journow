@@ -28,9 +28,22 @@ abstract public class SingleConnectionDatabase implements Database {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        try (var statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS project (" +
+                "project_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "project_name VARCHAR(120) NOT NULL" +
+                ");")
+        ) {
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         try (var statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS task (" +
                 "task_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "title VARCHAR(120) NOT NULL" +
+                "title VARCHAR(120) NOT NULL," +
+                "project_id INTEGER NULL," +
+                "FOREIGN KEY (project_id) REFERENCES project(project_id)" +
                 ");")
         ) {
             statement.execute();
