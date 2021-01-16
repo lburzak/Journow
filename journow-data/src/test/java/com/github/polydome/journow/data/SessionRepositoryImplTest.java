@@ -3,6 +3,7 @@ package com.github.polydome.journow.data;
 import com.github.polydome.journow.data.database.MemoryDatabase;
 import com.github.polydome.journow.data.event.DataEvent;
 import com.github.polydome.journow.data.event.DataEventBus;
+import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.model.Session;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.SessionRepository;
@@ -112,26 +113,10 @@ class SessionRepositoryImplTest {
         ));
     }
 
-    Task createTask() {
-        return new Task(2, "Test task", project);
-    }
-
-    Session createSession() {
-        return createSession(12);
-    }
-
-    Session createSession(long id) {
-        Instant startDate = Instant.ofEpochMilli(680002334);
-        Instant endDate = startDate.plusSeconds(10);
-        Task task = createTask();
-
-        return new Session(id, startDate, endDate, task);
-    }
-
     @Test
     void insert_sessionWithoutIdInserted_dispatchesEvent() throws SQLException {
         database.init();
-        var task = new Task(12, "test task 1", project);
+        var task = createTask();
         var start = Instant.ofEpochMilli(8300000);
 
         insertTask(task);
@@ -150,7 +135,7 @@ class SessionRepositoryImplTest {
     @Test
     void insert_sessionWithIdInserted_dispatchesEvent() throws SQLException {
         database.init();
-        var task = new Task(12, "test task 1", project);
+        var task = createTask();
         var start = Instant.ofEpochMilli(8300000);
 
         insertTask(task);
@@ -171,5 +156,21 @@ class SessionRepositoryImplTest {
         stmt.setLong(1, task.getId());
         stmt.setString(2, task.getTitle());
         stmt.execute();
+    }
+
+    Task createTask() {
+        return new Task(2, "Test task", new Project(18, "test project"));
+    }
+
+    Session createSession() {
+        return createSession(12);
+    }
+
+    Session createSession(long id) {
+        Instant startDate = Instant.ofEpochMilli(680002334);
+        Instant endDate = startDate.plusSeconds(10);
+        Task task = createTask();
+
+        return new Session(id, startDate, endDate, task);
     }
 }

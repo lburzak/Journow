@@ -3,6 +3,7 @@ package com.github.polydome.journow.data;
 import com.github.polydome.journow.data.event.DataEvent;
 import com.github.polydome.journow.data.event.DataEventBus;
 import com.github.polydome.journow.domain.exception.NoSuchTaskException;
+import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.TaskRepository;
 
@@ -13,6 +14,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.github.polydome.journow.data.ResultSetUtil.parseTask;
 
 public class TaskRepositoryImpl implements TaskRepository {
     private final Database database;
@@ -36,17 +39,17 @@ public class TaskRepositoryImpl implements TaskRepository {
             throw new IllegalStateException("Database is not ready");
 
         try (final var getTaskById =
-                getConnection().prepareStatement("select * from task where task_id = ?")) {
+                getConnection().prepareStatement("select * from task left join project p on p.project_id = task.project_id where task_id = ?")) {
             getTaskById.setLong(1, taskId);
 
-            try (final var taskResultSet = getTaskById.executeQuery()) {
-                if (!taskResultSet.next()) {
+            try (final var rs = getTaskById.executeQuery()) {
+                if (!rs.next()) {
                     return Optional.empty();
                 }
                 return Optional.of(new Task(
-                        taskResultSet.getLong("task_id"),
-                        taskResultSet.getString("title"),
-                        project));
+                        rs.getLong("task_id"),
+                        rs.getString("title"),
+                        new Project(rs.getLong("project_id"), rs.getString("project_name"))));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -71,7 +74,9 @@ public class TaskRepositoryImpl implements TaskRepository {
                     if (generatedKeys.next()) {
                         long id = generatedKeys.getLong(1);
                         dataEventBus.pushTaskEvent(DataEvent.insertOne(id));
-                        return new Task(id, task.getTitle(), project);
+                        Optional<Task> insertedTask = findById(id);
+                        if (insertedTask.isPresent())
+                            return insertedTask.get();
                     }
                 }
             } else {
@@ -123,15 +128,13 @@ public class TaskRepositoryImpl implements TaskRepository {
 
         try {
             if (findAll == null)
-                findAll = getConnection().prepareStatement("select task_id, title from task");
+                findAll = getConnection().prepareStatement("select * from task left join project p on task.project_id = p.project_id");
 
             try (var rs = findAll.executeQuery()) {
                 ArrayList<Task> tasks = new ArrayList<>();
 
                 while (rs.next()) {
-                    tasks.add(
-                            new Task(rs.getLong(1), rs.getString(2), project)
-                    );
+                    tasks.add(parseTask(rs));
                 }
 
                 return tasks;

@@ -2,6 +2,7 @@ package com.github.polydome.journow.data;
 
 import com.github.polydome.journow.data.event.DataEvent;
 import com.github.polydome.journow.data.event.DataEventBus;
+import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.model.Session;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.SessionRepository;
@@ -12,6 +13,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.github.polydome.journow.data.ResultSetUtil.parseSession;
 
 public class SessionRepositoryImpl implements SessionRepository {
     private final Database database;
@@ -76,18 +79,16 @@ public class SessionRepositoryImpl implements SessionRepository {
 
         try {
             if (selectAll == null)
-                selectAll = database.getConnection().prepareStatement("select session_id, start_date, end_date, task.task_id, task.title from session left join task on session.task_id = task.task_id");
+                selectAll = database.getConnection().prepareStatement("select *" +
+                        "from session\n" +
+                        "         left join task on session.task_id = task.task_id\n" +
+                        "         left join project p on task.project_id = p.project_id");
 
             try (ResultSet rows = selectAll.executeQuery()) {
                 ArrayList<Session> sessions = new ArrayList<>();
 
                 while (rows.next()) {
-                    sessions.add(new Session(
-                            rows.getLong(1),
-                            rows.getTimestamp(2).toInstant(),
-                            rows.getTimestamp(3).toInstant(),
-                            new Task(rows.getLong(4), rows.getString(5), project)
-                    ));
+                    sessions.add(parseSession(rows));
                 }
 
                 return sessions;

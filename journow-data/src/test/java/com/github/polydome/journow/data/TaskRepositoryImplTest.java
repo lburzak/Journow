@@ -3,6 +3,7 @@ package com.github.polydome.journow.data;
 import com.github.polydome.journow.data.database.MemoryDatabase;
 import com.github.polydome.journow.data.event.DataEvent;
 import com.github.polydome.journow.data.event.DataEventBus;
+import com.github.polydome.journow.data.test.TaskFactory;
 import com.github.polydome.journow.domain.exception.NoSuchTaskException;
 import com.github.polydome.journow.domain.model.Task;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+import static com.github.polydome.journow.data.test.TaskFactory.createTask;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,7 +38,7 @@ public class TaskRepositoryImplTest {
 
     @Test
     public void findById_taskExists_returnsTask() throws SQLException {
-        Task expected = new Task(12, "Test task", project);
+        Task expected = createTask();
 
         database.init();
         try (var stmt = database.getConnection().prepareStatement("insert into task (task_id, title) values (? ,?)")) {
@@ -61,7 +63,7 @@ public class TaskRepositoryImplTest {
 
     @Test
     void insert_taskNotExists_insertsTask() throws SQLException {
-        Task task = new Task(2, "test task", project);
+        Task task = createTask();
 
         database.init();
         SUT.insert(task);
@@ -84,7 +86,7 @@ public class TaskRepositoryImplTest {
 
     @Test
     void insert_taskNotExists_returnsCreatedTask() throws SQLException {
-        Task task = new Task(0, "test task", project);
+        Task task = createTask(0);
 
         database.init();
         Task actual = SUT.insert(task);
@@ -95,7 +97,9 @@ public class TaskRepositoryImplTest {
 
     @Test
     void insert_databaseNotReady_throwsIllegalStateException() {
-        Exception exception = assertThrows(IllegalStateException.class, () -> SUT.insert(new Task(0, "test task", project)));
+        Exception exception = assertThrows(IllegalStateException.class,
+                () -> SUT.insert(createTask(0))
+        );
 
         assertThat(exception.getMessage(), equalTo("Database is not ready"));
     }
@@ -120,8 +124,8 @@ public class TaskRepositoryImplTest {
     void count_tasksInDatabase_returnsTasksCount() {
         database.init();
 
-        SUT.insert(new Task(0, "test task 1", project));
-        SUT.insert(new Task(0, "test task 2", project));
+        SUT.insert(createTask(0));
+        SUT.insert(createTask(0));
 
         int count = SUT.count();
 
@@ -139,22 +143,22 @@ public class TaskRepositoryImplTest {
     void findAll_tasksInDatabase_returnsTasksList() {
         database.init();
 
-        SUT.insert(new Task(0, "test task 1", project));
-        SUT.insert(new Task(0, "test task 2", project));
+        SUT.insert(createTask(0, "test task 1"));
+        SUT.insert(createTask(0, "test task 2"));
 
         List<Task> tasks = SUT.findAll();
 
         assertThat(tasks.size(), equalTo(2));
         assertThat(tasks, hasItems(
-                new Task(1, "test task 1", project),
-                new Task(2, "test task 2", project)
+                createTask(1, "test task 1"),
+                createTask(2, "test task 2")
         ));
     }
 
     @Test
     void insert_taskWithoutIdInserted_dispatchesEvent() {
         database.init();
-        SUT.insert(new Task(0, "test task 1", project));
+        SUT.insert(createTask(0));
 
         ArgumentCaptor<DataEvent> eventCpt = ArgumentCaptor.forClass(DataEvent.class);
         verify(dataEventBus, Mockito.times(1)).pushTaskEvent(eventCpt.capture());
@@ -168,7 +172,7 @@ public class TaskRepositoryImplTest {
     @Test
     void insert_taskWithIdInserted_dispatchesEvent() {
         database.init();
-        SUT.insert(new Task(12, "test task 1", project));
+        SUT.insert(createTask(12));
 
         ArgumentCaptor<DataEvent> eventCpt = ArgumentCaptor.forClass(DataEvent.class);
         verify(dataEventBus, Mockito.times(1)).pushTaskEvent(eventCpt.capture());
@@ -184,7 +188,7 @@ public class TaskRepositoryImplTest {
         database.init();
 
         assertThrows(NoSuchTaskException.class, () -> {
-            SUT.update(new Task(2, "test task", project));
+            SUT.update(createTask(2, "test task"));
         });
     }
 
@@ -196,7 +200,7 @@ public class TaskRepositoryImplTest {
                 .prepareStatement("insert into task (title) values ('test task')")
                 .executeUpdate();
 
-        SUT.update(new Task(1, "test task edited", project));
+        SUT.update(createTask(1, "test task edited"));
 
         try (var rs = database.getConnection()
                 .prepareStatement("select task_id, title from task where task_id = 1")
@@ -214,7 +218,7 @@ public class TaskRepositoryImplTest {
                 .prepareStatement("insert into task (title) values ('test task')")
                 .executeUpdate();
 
-        SUT.update(new Task(1, "test task edited", project));
+        SUT.update(createTask(1, "test task edited"));
 
         var cpt = ArgumentCaptor.forClass(DataEvent.class);
         verify(dataEventBus).pushTaskEvent(cpt.capture());
