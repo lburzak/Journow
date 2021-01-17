@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ProjectRepository {
     List<Project> findAll();
-    void insert(Project project);
+    Project insert(Project project);
 }

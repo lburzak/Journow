@@ -82,6 +82,28 @@ class ProjectRepositoryImplTest {
         ));
     }
 
+    @Test
+    void insert_projectWithExplicitIdNotExists_returnsCreatedProject() {
+        database.init();
+
+        Project project = createProject(12);
+
+        var createdProject = SUT.insert(project);
+
+        assertThat(createdProject, equalTo(project));
+    }
+
+    @Test
+    void insert_projectWithImplicitId_returnsCreatedProject() {
+        database.init();
+
+        Project project = createProject(0);
+
+        var createdProject = SUT.insert(project);
+
+        assertThat(createdProject, equalTo(new Project(1, project.getName())));
+    }
+
     Project createProject() {
         return createProject(72);
     }
