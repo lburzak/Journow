@@ -1,11 +1,13 @@
 package com.github.polydome.journow.di;
 
 import com.github.polydome.journow.data.Database;
+import com.github.polydome.journow.data.ProjectRepositoryImpl;
 import com.github.polydome.journow.data.SessionRepositoryImpl;
 import com.github.polydome.journow.data.TaskRepositoryImpl;
 import com.github.polydome.journow.data.event.DataEventBus;
 import com.github.polydome.journow.domain.controller.Tracker;
 import com.github.polydome.journow.domain.model.TrackerData;
+import com.github.polydome.journow.domain.repository.ProjectRepository;
 import com.github.polydome.journow.domain.repository.SessionRepository;
 import com.github.polydome.journow.domain.repository.TaskRepository;
 import com.github.polydome.journow.domain.service.TrackerDataStorage;
@@ -26,6 +28,11 @@ public class DomainModule {
     @Provides
     SessionRepository sessionRepository(Database database, DataEventBus dataEventBus) {
         return new SessionRepositoryImpl(database, dataEventBus);
+    }
+
+    @Provides
+    ProjectRepository projectRepository(Database database) {
+        return new ProjectRepositoryImpl(database);
     }
 
     @Provides

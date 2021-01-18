@@ -3,7 +3,6 @@ package com.github.polydome.journow.data;
 import com.github.polydome.journow.data.event.DataEvent;
 import com.github.polydome.journow.data.event.DataEventBus;
 import com.github.polydome.journow.domain.exception.NoSuchTaskException;
-import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.TaskRepository;
 
@@ -46,10 +45,7 @@ public class TaskRepositoryImpl implements TaskRepository {
                 if (!rs.next()) {
                     return Optional.empty();
                 }
-                return Optional.of(new Task(
-                        rs.getLong("task_id"),
-                        rs.getString("title"),
-                        new Project(rs.getLong("project_id"), rs.getString("project_name"))));
+                return Optional.of(parseTask(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -153,10 +149,11 @@ public class TaskRepositoryImpl implements TaskRepository {
                 throw new NoSuchTaskException(task.getId());
             else {
                 if (updateTask == null)
-                    updateTask = getConnection().prepareStatement("update task set title = ? where task_id = ?");
+                    updateTask = getConnection().prepareStatement("update task set title = ?, project_id = ? where task_id = ?");
 
                 updateTask.setString(1, task.getTitle());
-                updateTask.setLong(2, task.getId());
+                updateTask.setLong(2, task.getProject().getId());
+                updateTask.setLong(3, task.getId());
 
                 if (updateTask.executeUpdate() > 0)
                     dataEventBus.pushTaskEvent(DataEvent.updateOne(task.getId()));
