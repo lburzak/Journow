@@ -5,7 +5,6 @@ import com.github.polydome.journow.data.ProjectRepositoryImpl;
 import com.github.polydome.journow.data.SessionRepositoryImpl;
 import com.github.polydome.journow.data.TaskRepositoryImpl;
 import com.github.polydome.journow.data.event.DataEventBus;
-import com.github.polydome.journow.domain.controller.Tracker;
 import com.github.polydome.journow.domain.model.TrackerData;
 import com.github.polydome.journow.domain.repository.ProjectRepository;
 import com.github.polydome.journow.domain.repository.SessionRepository;
@@ -14,7 +13,6 @@ import com.github.polydome.journow.domain.service.TrackerDataStorage;
 import dagger.Module;
 import dagger.Provides;
 
-import javax.inject.Singleton;
 import java.time.Clock;
 import java.util.Optional;
 
@@ -31,8 +29,8 @@ public class DomainModule {
     }
 
     @Provides
-    ProjectRepository projectRepository(Database database) {
-        return new ProjectRepositoryImpl(database);
+    ProjectRepository projectRepository(Database database, DataEventBus dataEventBus) {
+        return new ProjectRepositoryImpl(database, dataEventBus);
     }
 
     @Provides

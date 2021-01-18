@@ -1,5 +1,7 @@
 package com.github.polydome.journow.data;
 
+import com.github.polydome.journow.data.event.DataEvent;
+import com.github.polydome.journow.data.event.DataEventBus;
 import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.repository.ProjectRepository;
 
@@ -15,14 +17,16 @@ import static com.github.polydome.journow.data.ResultSetUtil.parseProject;
 
 public class ProjectRepositoryImpl implements ProjectRepository {
     private final Database database;
+    private final DataEventBus dataEventBus;
 
     private PreparedStatement selectAll;
     private PreparedStatement insertWithId;
     private PreparedStatement insertNew;
     private PreparedStatement findById;
 
-    public ProjectRepositoryImpl(Database database) {
+    public ProjectRepositoryImpl(Database database, DataEventBus dataEventBus) {
         this.database = database;
+        this.dataEventBus = dataEventBus;
     }
 
     @Override
@@ -63,8 +67,10 @@ public class ProjectRepositoryImpl implements ProjectRepository {
                 insertWithId.execute();
 
                 Optional<Project> insertedProject = findById(project.getId());
-                if (insertedProject.isPresent())
+                if (insertedProject.isPresent()) {
+                    dataEventBus.pushProjectEvent(DataEvent.insertOne(insertedProject.get().getId()));
                     return insertedProject.get();
+                }
             } else {
                 if (insertNew == null)
                     insertNew = getConnection().prepareStatement("insert into project (project_name) values (?)");
@@ -76,8 +82,10 @@ public class ProjectRepositoryImpl implements ProjectRepository {
                     if (generatedKeys.next()) {
                         long id = generatedKeys.getLong(1);
                         Optional<Project> insertedProject = findById(id);
-                        if (insertedProject.isPresent())
+                        if (insertedProject.isPresent()) {
+                            dataEventBus.pushProjectEvent(DataEvent.insertOne(id));
                             return insertedProject.get();
+                        }
                     }
                 }
             }
