@@ -4,31 +4,31 @@ import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.ProjectRepository;
 import com.github.polydome.journow.domain.repository.TaskRepository;
+import com.github.polydome.journow.ui.listmodel.ProjectListModel;
 
 import javax.inject.Inject;
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 public class TaskPreviewPane extends JPanel implements EntityEditorForm {
     private final JTextField titleField = new JTextField("Hello there");
     private final JComboBox<String> projectField = new JComboBox<>();
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
+    private final ProjectListModel projectListModel;
 
     private long previewedTaskId = -1;
-    List<Project> projects = List.of();
 
     @Inject
-    public TaskPreviewPane(PreviewModel model, TaskRepository taskRepository, ProjectRepository projectRepository) {
+    public TaskPreviewPane(PreviewModel model, TaskRepository taskRepository, ProjectRepository projectRepository, ProjectListModel projectListModel) {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
+        this.projectListModel = projectListModel;
         JLabel titleLabel = new JLabel("Title");
         JLabel projectLabel = new JLabel("Project");
 
         projectField.setEditable(true);
-
-        populateProjectsList();
+        projectField.setModel(projectListModel);
 
         GridBagLayout layout = new GridBagLayout();
         setLayout(layout);
@@ -77,21 +77,13 @@ public class TaskPreviewPane extends JPanel implements EntityEditorForm {
         Project project;
         int selectedProjectIndex = projectField.getSelectedIndex();
 
-        if (selectedProjectIndex == 0)
+        if (projectField.getSelectedItem() == null || projectField.getSelectedItem().equals(""))
             project = null;
         else if (selectedProjectIndex == -1)
             project = projectRepository.insert(new Project(0, (String) projectField.getSelectedItem()));
         else
-            project = projects.get(selectedProjectIndex);
+            project = projectListModel.getProjectAt(selectedProjectIndex);
 
         taskRepository.update(new Task(previewedTaskId, titleField.getText(), project));
-    }
-
-    private void populateProjectsList() {
-        projects = projectRepository.findAll();
-
-        projectField.addItem("<No project>");
-        for (final var project : projects)
-            projectField.addItem(project.getName());
     }
 }

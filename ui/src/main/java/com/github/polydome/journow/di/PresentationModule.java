@@ -28,4 +28,10 @@ public class PresentationModule {
     Observable<DataEvent> sessionDataEvents(DataEventBus dataEventBus) {
         return dataEventBus.sessionEvents();
     }
+
+    @Provides
+    @Named("ProjectDataEvents")
+    Observable<DataEvent> projectDataEvents(DataEventBus dataEventBus) {
+        return dataEventBus.projectEvents();
+    }
 }

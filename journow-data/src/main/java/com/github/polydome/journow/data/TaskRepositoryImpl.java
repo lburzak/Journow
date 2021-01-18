@@ -152,7 +152,12 @@ public class TaskRepositoryImpl implements TaskRepository {
                     updateTask = getConnection().prepareStatement("update task set title = ?, project_id = ? where task_id = ?");
 
                 updateTask.setString(1, task.getTitle());
-                updateTask.setLong(2, task.getProject().getId());
+
+                if (task.getProject() != null)
+                    updateTask.setLong(2, task.getProject().getId());
+                else
+                    updateTask.setString(2, "null");
+
                 updateTask.setLong(3, task.getId());
 
                 if (updateTask.executeUpdate() > 0)

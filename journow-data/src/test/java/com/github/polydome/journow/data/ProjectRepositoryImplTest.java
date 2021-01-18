@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class ProjectRepositoryImplTest {
     Database database = new MemoryDatabase();
-    ProjectRepository SUT = new ProjectRepositoryImpl(database);
+    ProjectRepository SUT = new ProjectRepositoryImpl(database, dataEventBus);
 
     @Test
     void findAll_databaseNotReady_throwsException() {
