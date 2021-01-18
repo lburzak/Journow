@@ -21,6 +21,10 @@ public class Task {
         return id;
     }
 
+    public Project getProject() {
+        return project;
+    }
+
     @Override
     public String toString() {
         return title;
