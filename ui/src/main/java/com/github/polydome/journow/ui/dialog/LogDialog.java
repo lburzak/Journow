@@ -102,6 +102,7 @@ public class LogDialog extends JDialog {
 
         Task task = taskRepository.insert(new Task(0, titleField.getText(), project));
 
+        // TODO: Use use case instead
         sessionRepository.insert(new Session(0,
                 getDateTimeInstant(startDatePicker),
                 getDateTimeInstant(endDatePicker),
