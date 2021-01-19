@@ -10,7 +10,6 @@ import com.github.polydome.journow.domain.repository.TaskRepository;
 import com.github.polydome.journow.ui.control.ProjectSelector;
 import com.github.polydome.journow.ui.listmodel.ProjectListModel;
 
-import javax.inject.Inject;
 import javax.swing.*;
 import java.awt.*;
 import java.time.Instant;
@@ -26,8 +25,24 @@ public class LogDialog extends JDialog {
     private final DateTimePicker startDatePicker = new DateTimePicker();
     private final DateTimePicker endDatePicker = new DateTimePicker();
 
-    @Inject
-    public LogDialog(ProjectRepository projectRepository, TaskRepository taskRepository, SessionRepository sessionRepository, ProjectListModel projectListModel) {
+    public LogDialog(ProjectRepository projectRepository,
+                     TaskRepository taskRepository,
+                     SessionRepository sessionRepository,
+                     ProjectListModel projectListModel,
+                     Task task) {
+        this(projectRepository, taskRepository, sessionRepository, projectListModel);
+
+        titleField.setText(task.getTitle());
+        titleField.setEnabled(false);
+
+        projectField.setSelectedItem(task.getProject().getName());
+        projectField.setEnabled(false);
+    }
+
+    public LogDialog(ProjectRepository projectRepository,
+                     TaskRepository taskRepository,
+                     SessionRepository sessionRepository,
+                     ProjectListModel projectListModel) {
         this.projectRepository = projectRepository;
         this.taskRepository = taskRepository;
         this.sessionRepository = sessionRepository;
