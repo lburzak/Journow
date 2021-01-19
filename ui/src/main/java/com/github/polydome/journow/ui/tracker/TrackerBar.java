@@ -1,7 +1,10 @@
 package com.github.polydome.journow.ui.tracker;
 
+import com.github.polydome.journow.domain.model.Project;
+import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.ui.control.ProjectSelector;
 import com.github.polydome.journow.ui.dialog.LogDialog;
+import com.github.polydome.journow.ui.dialog.LogDialogFactory;
 import com.github.polydome.journow.viewmodel.TrackerViewModel;
 
 import javax.inject.Inject;
@@ -14,6 +17,7 @@ import java.awt.event.KeyEvent;
 public class TrackerBar extends JPanel {
     private final TrackerViewModel viewModel;
     private final ProjectSelector projectSelector;
+    private final LogDialogFactory logDialogFactory;
 
     private final JLabel elapsedTimeCounter = new JLabel();
     private final JLabel taskTitleLabel = new JLabel();
@@ -23,10 +27,11 @@ public class TrackerBar extends JPanel {
     private final JButton logButton = new JButton("Log");
 
     @Inject
-    public TrackerBar(TrackerViewModel viewModel, ProjectSelector projectSelector, Provider<LogDialog> logDialogProvider) {
+    public TrackerBar(TrackerViewModel viewModel, ProjectSelector projectSelector, LogDialogFactory logDialogFactory) {
         super();
         this.viewModel = viewModel;
         this.projectSelector = projectSelector;
+        this.logDialogFactory = logDialogFactory;
 
         setLayout(new GridBagLayout());
 
@@ -37,7 +42,8 @@ public class TrackerBar extends JPanel {
                     projectSelector.getSelectedProject(),
                     projectSelector.hasCustomProject())
         );
-        logButton.addActionListener(a -> logDialogProvider.get());
+
+        logButton.addActionListener(a -> showLogDialog());
 
         setupKeys();
 
@@ -97,5 +103,14 @@ public class TrackerBar extends JPanel {
                 viewModel.startSession(taskTitleInput.getText(), projectSelector.getSelectedProject(), projectSelector.hasCustomProject());
             }
         });
+    }
+
+    private void showLogDialog() {
+        if (taskTitleInput.getText().equals(""))
+            logDialogFactory.createBlank();
+        else
+            logDialogFactory.createLinked(
+                    new Task(0, taskTitleInput.getText(), projectSelector.getSelectedProject())
+            );
     }
 }
