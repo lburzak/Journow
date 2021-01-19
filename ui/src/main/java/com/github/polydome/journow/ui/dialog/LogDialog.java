@@ -5,8 +5,8 @@ import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.model.Session;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.ProjectRepository;
-import com.github.polydome.journow.domain.repository.SessionRepository;
 import com.github.polydome.journow.domain.repository.TaskRepository;
+import com.github.polydome.journow.domain.usecase.LogSessionUseCase;
 import com.github.polydome.journow.ui.control.ProjectSelector;
 import com.github.polydome.journow.ui.listmodel.ProjectListModel;
 
@@ -18,7 +18,7 @@ import java.time.ZoneOffset;
 public class LogDialog extends JDialog {
     private final ProjectRepository projectRepository;
     private final TaskRepository taskRepository;
-    private final SessionRepository sessionRepository;
+    private final LogSessionUseCase logSessionUseCase;
 
     private final JTextField titleField = new JTextField();
     private final ProjectSelector projectField;
@@ -27,10 +27,10 @@ public class LogDialog extends JDialog {
 
     public LogDialog(ProjectRepository projectRepository,
                      TaskRepository taskRepository,
-                     SessionRepository sessionRepository,
+                     LogSessionUseCase logSessionUseCase,
                      ProjectListModel projectListModel,
                      Task task) {
-        this(projectRepository, taskRepository, sessionRepository, projectListModel);
+        this(projectRepository, taskRepository, logSessionUseCase, projectListModel);
 
         titleField.setText(task.getTitle());
         titleField.setEnabled(false);
@@ -41,11 +41,11 @@ public class LogDialog extends JDialog {
 
     public LogDialog(ProjectRepository projectRepository,
                      TaskRepository taskRepository,
-                     SessionRepository sessionRepository,
+                     LogSessionUseCase logSessionUseCase,
                      ProjectListModel projectListModel) {
+        this.logSessionUseCase = logSessionUseCase;
         this.projectRepository = projectRepository;
         this.taskRepository = taskRepository;
-        this.sessionRepository = sessionRepository;
         this.projectField = new ProjectSelector(projectListModel);
 
         setTitle("Journow - Log session");
@@ -102,11 +102,11 @@ public class LogDialog extends JDialog {
 
         Task task = taskRepository.insert(new Task(0, titleField.getText(), project));
 
-        // TODO: Use use case instead
-        sessionRepository.insert(new Session(0,
+        logSessionUseCase.execute(
                 getDateTimeInstant(startDatePicker),
                 getDateTimeInstant(endDatePicker),
-                task));
+                task.getId()
+        );
 
         dispose();
     }

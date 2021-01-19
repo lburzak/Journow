@@ -10,6 +10,7 @@ import com.github.polydome.journow.domain.repository.ProjectRepository;
 import com.github.polydome.journow.domain.repository.SessionRepository;
 import com.github.polydome.journow.domain.repository.TaskRepository;
 import com.github.polydome.journow.domain.service.TrackerDataStorage;
+import com.github.polydome.journow.domain.usecase.LogSessionUseCase;
 import dagger.Module;
 import dagger.Provides;
 
@@ -31,6 +32,11 @@ public class DomainModule {
     @Provides
     ProjectRepository projectRepository(Database database, DataEventBus dataEventBus) {
         return new ProjectRepositoryImpl(database, dataEventBus);
+    }
+
+    @Provides
+    LogSessionUseCase logSessionUseCase(TaskRepository taskRepository, SessionRepository sessionRepository) {
+        return new LogSessionUseCase(taskRepository, sessionRepository);
     }
 
     @Provides
