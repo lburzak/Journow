@@ -1,6 +1,7 @@
 package com.github.polydome.journow.ui.tracker;
 
 import com.github.polydome.journow.ui.control.ProjectSelector;
+import com.github.polydome.journow.ui.dialog.LogDialog;
 import com.github.polydome.journow.viewmodel.TrackerViewModel;
 
 import javax.inject.Inject;
@@ -29,12 +30,13 @@ public class TrackerBar extends JPanel {
         setLayout(new GridBagLayout());
 
         elapsedTimeCounter.setFont(new Font("Roboto", Font.PLAIN, 24));
-        stopTrackerButton.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                viewModel.endSession();
-            }
-        });
+        stopTrackerButton.addActionListener(a -> viewModel.endSession());
+        startTrackerButton.addActionListener(a -> viewModel
+                .startSession(taskTitleInput.getText(),
+                    projectSelector.getSelectedProject(),
+                    projectSelector.hasCustomProject())
+        );
+        logButton.addActionListener(a -> new LogDialog());
 
         setupKeys();
 

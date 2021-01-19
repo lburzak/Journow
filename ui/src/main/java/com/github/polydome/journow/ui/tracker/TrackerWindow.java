@@ -1,7 +1,5 @@
 package com.github.polydome.journow.ui.tracker;
 
-import com.github.polydome.journow.viewmodel.TrackerViewModel;
-
 import javax.inject.Inject;
 import javax.swing.*;
 import java.awt.*;
