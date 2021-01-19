@@ -5,6 +5,7 @@ import com.github.polydome.journow.ui.dialog.LogDialog;
 import com.github.polydome.journow.viewmodel.TrackerViewModel;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -22,7 +23,7 @@ public class TrackerBar extends JPanel {
     private final JButton logButton = new JButton("Log");
 
     @Inject
-    public TrackerBar(TrackerViewModel viewModel, ProjectSelector projectSelector) {
+    public TrackerBar(TrackerViewModel viewModel, ProjectSelector projectSelector, Provider<LogDialog> logDialogProvider) {
         super();
         this.viewModel = viewModel;
         this.projectSelector = projectSelector;
@@ -36,7 +37,7 @@ public class TrackerBar extends JPanel {
                     projectSelector.getSelectedProject(),
                     projectSelector.hasCustomProject())
         );
-        logButton.addActionListener(a -> new LogDialog());
+        logButton.addActionListener(a -> logDialogProvider.get());
 
         setupKeys();
 
