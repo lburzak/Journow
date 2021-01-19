@@ -18,25 +18,25 @@ public class TrackerBar extends JPanel {
 
     JLabel elapsedTimeCounter = new JLabel();
     JLabel taskTitleLabel = new JLabel();
-    JTextField taskTitleInput = new JTextField("this is an example task");
+    JTextField taskTitleInput = new JTextField();
     JButton stopTrackerButton = new JButton("Stop");
+    JButton startTrackerButton = new JButton("Start");
+    JButton logButton = new JButton("Log");
+    JComboBox<String> projectSelection = new JComboBox<>();
 
     private void inflateLayout() {
-        layout.putConstraint(SOUTH, elapsedTimeCounter, -5, SOUTH, this);
-        layout.putConstraint(WEST, elapsedTimeCounter, 5, WEST, this);
-        layout.putConstraint(VERTICAL_CENTER, elapsedTimeCounter, 0, VERTICAL_CENTER, this);
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.insets = new Insets(0, 10, 0, 10);
+        constraints.weightx = 0.1;
+        add(elapsedTimeCounter, constraints);
 
-        layout.putConstraint(SOUTH, stopTrackerButton, -5, SOUTH, this);
-        layout.putConstraint(NORTH, stopTrackerButton, 5, NORTH, this);
-        layout.putConstraint(EAST, stopTrackerButton, 5, EAST, this);
+        constraints.weightx = 0.8;
+        add(taskTitleLabel, constraints);
+        add(taskTitleInput, constraints);
 
-        layout.putConstraint(VERTICAL_CENTER, taskTitleLabel, 0, VERTICAL_CENTER, elapsedTimeCounter);
-        layout.putConstraint(HORIZONTAL_CENTER, taskTitleLabel, 0, HORIZONTAL_CENTER, this);
-
-        layout.putConstraint(EAST, taskTitleInput, 0, EAST, this);
-        layout.putConstraint(WEST, taskTitleInput, 0, WEST, this);
-        layout.putConstraint(SOUTH, taskTitleInput, 0, SOUTH, this);
-        layout.putConstraint(NORTH, taskTitleInput, 0, NORTH, this);
+        constraints.weightx = 0.1;
+        add(stopTrackerButton, constraints);
     }
 
     public void onCreate() {
@@ -49,11 +49,7 @@ public class TrackerBar extends JPanel {
         super();
         this.viewModel = viewModel;
 
-        int margin = 10;
-        Border emptyBorder = BorderFactory.createEmptyBorder(margin, margin, margin, margin);
-        setBorder(emptyBorder);
-
-        setLayout(layout);
+        setLayout(new GridBagLayout());
 
         elapsedTimeCounter.setFont(new Font("Roboto", Font.PLAIN, 24));
         stopTrackerButton.addActionListener(new AbstractAction() {
@@ -62,11 +58,6 @@ public class TrackerBar extends JPanel {
                 viewModel.endSession();
             }
         });
-
-        add(elapsedTimeCounter);
-        add(taskTitleLabel);
-        add(taskTitleInput);
-        add(stopTrackerButton);
 
         setupKeys();
 
