@@ -11,7 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class TaskPreviewPane extends JPanel implements EntityEditorForm {
-    private final JTextField titleField = new JTextField("Hello there");
+    private final JTextField titleField = new JTextField();
     private final JComboBox<String> projectField = new JComboBox<>();
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
