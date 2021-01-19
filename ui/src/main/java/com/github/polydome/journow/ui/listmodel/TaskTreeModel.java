@@ -51,7 +51,7 @@ public class TaskTreeModel extends DefaultTreeModel {
     }
 
     private String formatProject(Project project) {
-        String label = "<html><font color=#AAAAAA>#" + project.getId() +" <font color=#000000>" + project.getName() + "</html>";
+        String label = "<html><b><font color=#AAAAAA>#" + project.getId() +" <font color=#000000>" + project.getName() + "</html>";
         labelItemMap.put(label, project);
         return label;
     }
