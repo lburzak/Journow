@@ -10,9 +10,12 @@ public class TrackerWindow extends JFrame {
     private final BorderLayout layout = new BorderLayout();
 
     @Inject
-    public TrackerWindow(TrackerViewModel trackerViewModel, ListsPager listsPager) {
+    public TrackerWindow(ListsPager listsPager, TrackerBar trackerBar) {
         createWindow();
-        createContentView(trackerViewModel, listsPager);
+        getContentPane().add(trackerBar, BorderLayout.PAGE_END);
+        getContentPane().add(listsPager, BorderLayout.CENTER);
+
+        trackerBar.onCreate();
     }
 
     private void createWindow() {
@@ -23,14 +26,6 @@ public class TrackerWindow extends JFrame {
         setLocationRelativeTo(null);
 
         setSize(800, 400);
-    }
-
-    private void createContentView(TrackerViewModel viewModel, ListsPager listsPager) {
-        TrackerBar mainPanel = new TrackerBar(viewModel);
-        getContentPane().add(mainPanel, BorderLayout.PAGE_END);
-        getContentPane().add(listsPager, BorderLayout.CENTER);
-
-        mainPanel.onCreate();
     }
 
     public void showWindow() {
