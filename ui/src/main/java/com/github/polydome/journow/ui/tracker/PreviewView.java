@@ -22,7 +22,6 @@ public class PreviewView extends JPanel {
         c.weightx = 0.8;
         bottomPanel.add(new JPanel(), c);
         c.weightx = 0.2;
-        c.insets = new Insets(10, 10, 0, 10);
         JButton saveButton = new JButton("Save");
         saveButton.addActionListener(a -> {
             ((EntityEditorForm) taskPreviewPane).submit();
