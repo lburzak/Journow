@@ -1,21 +1,36 @@
 package com.github.polydome.journow.ui.dialog;
 
 import com.github.lgooddatepicker.components.DateTimePicker;
+import com.github.polydome.journow.domain.model.Project;
+import com.github.polydome.journow.domain.model.Session;
+import com.github.polydome.journow.domain.model.Task;
+import com.github.polydome.journow.domain.repository.ProjectRepository;
+import com.github.polydome.journow.domain.repository.SessionRepository;
+import com.github.polydome.journow.domain.repository.TaskRepository;
 import com.github.polydome.journow.ui.control.ProjectSelector;
 import com.github.polydome.journow.ui.listmodel.ProjectListModel;
 
 import javax.inject.Inject;
 import javax.swing.*;
 import java.awt.*;
+import java.time.Instant;
+import java.time.ZoneOffset;
 
 public class LogDialog extends JDialog {
+    private final ProjectRepository projectRepository;
+    private final TaskRepository taskRepository;
+    private final SessionRepository sessionRepository;
+
     private final JTextField titleField = new JTextField();
     private final ProjectSelector projectField;
     private final DateTimePicker startDatePicker = new DateTimePicker();
     private final DateTimePicker endDatePicker = new DateTimePicker();
 
     @Inject
-    public LogDialog(ProjectListModel projectListModel) {
+    public LogDialog(ProjectRepository projectRepository, TaskRepository taskRepository, SessionRepository sessionRepository, ProjectListModel projectListModel) {
+        this.projectRepository = projectRepository;
+        this.taskRepository = taskRepository;
+        this.sessionRepository = sessionRepository;
         this.projectField = new ProjectSelector(projectListModel);
 
         setTitle("Journow - Log session");
@@ -51,7 +66,9 @@ public class LogDialog extends JDialog {
 
         c.weightx = 0.3;
         c.gridy++;
-        add(new JButton("Save"), c);
+        JButton submitButton = new JButton("Save");
+        add(submitButton, c);
+        submitButton.addActionListener(a -> submit());
 
         startDatePicker.getDatePicker().setDateToToday();
         startDatePicker.getTimePicker().setTimeToNow();
@@ -61,5 +78,24 @@ public class LogDialog extends JDialog {
         pack();
 
         setVisible(true);
+    }
+
+    private void submit() {
+        Project project = projectField.getSelectedProject();
+        if (projectField.hasCustomProject())
+            project = projectRepository.insert(project);
+
+        Task task = taskRepository.insert(new Task(0, titleField.getText(), project));
+
+        sessionRepository.insert(new Session(0,
+                getDateTimeInstant(startDatePicker),
+                getDateTimeInstant(endDatePicker),
+                task));
+
+        dispose();
+    }
+
+    private Instant getDateTimeInstant(DateTimePicker picker) {
+        return picker.getDateTimePermissive().toInstant(ZoneOffset.UTC);
     }
 }
