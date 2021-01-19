@@ -6,10 +6,7 @@ import com.github.polydome.journow.domain.exception.NoSuchTaskException;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.TaskRepository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -61,9 +58,14 @@ public class TaskRepositoryImpl implements TaskRepository {
         try {
             if (task.getId() == 0) {
                 if (insertNewTask == null)
-                    insertNewTask = getConnection().prepareStatement("insert into task (title) values (?)");
+                    insertNewTask = getConnection().prepareStatement("insert into task (title, project_id) values (?, ?)");
 
                 insertNewTask.setString(1, task.getTitle());
+                if (task.getProject() == null)
+                    insertNewTask.setNull(2, Types.NULL);
+                else
+                    insertNewTask.setLong(2, task.getProject().getId());
+
                 insertNewTask.execute();
 
                 try (ResultSet generatedKeys = insertNewTask.getGeneratedKeys()) {
@@ -77,10 +79,14 @@ public class TaskRepositoryImpl implements TaskRepository {
                 }
             } else {
                 if (insertTask == null)
-                    insertTask = getConnection().prepareStatement("insert into task (task_id, title) values (?, ?)");
+                    insertTask = getConnection().prepareStatement("insert into task (task_id, title, project_id) values (?, ?, ?)");
 
                 insertTask.setLong(1, task.getId());
                 insertTask.setString(2, task.getTitle());
+                if (task.getProject() == null)
+                    insertNewTask.setNull(3, Types.NULL);
+                else
+                    insertNewTask.setLong(3, task.getProject().getId());
 
                 if (insertTask.executeUpdate() > 0) {
                     dataEventBus.pushTaskEvent(DataEvent.insertOne(task.getId()));

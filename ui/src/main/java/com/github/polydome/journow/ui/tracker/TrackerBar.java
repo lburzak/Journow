@@ -1,6 +1,6 @@
 package com.github.polydome.journow.ui.tracker;
 
-import com.github.polydome.journow.ui.listmodel.ProjectListModel;
+import com.github.polydome.journow.ui.control.ProjectSelector;
 import com.github.polydome.journow.viewmodel.TrackerViewModel;
 
 import javax.inject.Inject;
@@ -11,7 +11,7 @@ import java.awt.event.KeyEvent;
 
 public class TrackerBar extends JPanel {
     private final TrackerViewModel viewModel;
-    private final JComboBox<String> projectSelector;
+    private final ProjectSelector projectSelector;
 
     private final JLabel elapsedTimeCounter = new JLabel();
     private final JLabel taskTitleLabel = new JLabel();
@@ -21,10 +21,10 @@ public class TrackerBar extends JPanel {
     private final JButton logButton = new JButton("Log");
 
     @Inject
-    public TrackerBar(TrackerViewModel viewModel, ProjectListModel projectListModel) {
+    public TrackerBar(TrackerViewModel viewModel, ProjectSelector projectSelector) {
         super();
         this.viewModel = viewModel;
-        projectSelector = new JComboBox<>(projectListModel);
+        this.projectSelector = projectSelector;
 
         setLayout(new GridBagLayout());
 
@@ -50,7 +50,7 @@ public class TrackerBar extends JPanel {
                     elapsedTimeCounter.setVisible(it);
                     stopTrackerButton.setVisible(it);
                     taskTitleInput.setVisible(!it);
-                    projectSelector.setVisible(!it);
+                    this.projectSelector.setVisible(!it);
                     startTrackerButton.setVisible(!it);
                     logButton.setVisible(!it);
                 });
@@ -91,7 +91,7 @@ public class TrackerBar extends JPanel {
         taskTitleInput.getActionMap().put("start", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                viewModel.startSession(taskTitleInput.getText());
+                viewModel.startSession(taskTitleInput.getText(), projectSelector.getSelectedProject(), projectSelector.hasCustomProject());
             }
         });
     }

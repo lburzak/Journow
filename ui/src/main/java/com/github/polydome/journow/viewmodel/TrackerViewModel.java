@@ -1,7 +1,9 @@
 package com.github.polydome.journow.viewmodel;
 
 import com.github.polydome.journow.domain.controller.Tracker;
+import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.model.Task;
+import com.github.polydome.journow.domain.repository.ProjectRepository;
 import com.github.polydome.journow.domain.repository.TaskRepository;
 import com.github.polydome.journow.ui.tracker.common.FormatUtils;
 import io.reactivex.rxjava3.core.Observable;
@@ -15,12 +17,14 @@ public class TrackerViewModel {
     private final Tracker tracker;
     private final Observable<Long> updateInterval;
     private final TaskRepository taskRepository;
+    private final ProjectRepository projectRepository;
 
     @Inject
-    public TrackerViewModel(Tracker tracker, @Named("TimerUpdateInterval") Observable<Long> updateInterval, TaskRepository taskRepository) {
+    public TrackerViewModel(Tracker tracker, @Named("TimerUpdateInterval") Observable<Long> updateInterval, TaskRepository taskRepository, ProjectRepository projectRepository) {
         this.tracker = tracker;
         this.updateInterval = updateInterval;
         this.taskRepository = taskRepository;
+        this.projectRepository = projectRepository;
     }
 
     public Observable<Boolean> hasOngoingSession() {
@@ -45,8 +49,11 @@ public class TrackerViewModel {
         return FormatUtils.formatDuration(duration);
     }
 
-    public void startSession(String title) {
-        Task task = taskRepository.insert(new Task(0, title, null));
+    public void startSession(String title, Project project, boolean isNewProject) {
+        if (isNewProject)
+            project = projectRepository.insert(project);
+
+        Task task = taskRepository.insert(new Task(0, title, project));
 
         tracker.start(task.getId());
     }
