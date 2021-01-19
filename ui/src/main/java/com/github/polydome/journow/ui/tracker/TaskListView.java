@@ -7,6 +7,7 @@ import com.github.polydome.journow.ui.preview.PreviewModel;
 
 import javax.inject.Inject;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -26,8 +27,10 @@ public class TaskListView extends JPanel {
                 previewModel.previewTask(selectedTask);
             }
         });
-        add(list);
-        add(new JScrollPane(list));
+
+        JScrollPane scrollPane = new JScrollPane(list);
+        setLayout(new BorderLayout());
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     private static class TaskCellPopupListener extends MouseAdapter {
