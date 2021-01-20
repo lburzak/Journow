@@ -71,8 +71,9 @@ public class TaskPreviewPane extends JPanel implements EntityEditorForm {
 
     @Override
     public void submit() {
-        if (projectSelector.hasCustomProject())
-            projectRepository.insert(projectSelector.getSelectedProject());
+        if (projectSelector.hasProjectSelected())
+            if (projectSelector.hasCustomProject())
+                projectRepository.insert(projectSelector.getSelectedProject());
         taskRepository.update(new Task(previewedTaskId, titleField.getText(), projectSelector.getSelectedProject()));
     }
 }

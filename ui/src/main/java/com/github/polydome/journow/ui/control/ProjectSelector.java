@@ -20,6 +20,10 @@ public class ProjectSelector extends JComboBox<String> {
         return getSelectedIndex() == -1;
     }
 
+    public boolean hasProjectSelected() {
+        return getSelectedIndex() != 0 && getSelectedItem() != null && !getSelectedItem().equals("");
+    }
+
     public Project getSelectedProject() {
         Project project;
         int selectedProjectIndex = getSelectedIndex();
