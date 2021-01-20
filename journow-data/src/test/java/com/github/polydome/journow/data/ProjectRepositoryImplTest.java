@@ -2,6 +2,7 @@ package com.github.polydome.journow.data;
 
 import com.github.polydome.journow.data.database.MemoryDatabase;
 import com.github.polydome.journow.data.event.DataEventBus;
+import com.github.polydome.journow.data.repository.ProjectRepositoryImpl;
 import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.repository.ProjectRepository;
 import org.junit.jupiter.api.Test;

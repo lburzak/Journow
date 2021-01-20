@@ -1,10 +1,9 @@
-package com.github.polydome.journow.data;
+package com.github.polydome.journow.data.repository;
 
+import com.github.polydome.journow.data.Database;
 import com.github.polydome.journow.data.event.DataEvent;
 import com.github.polydome.journow.data.event.DataEventBus;
-import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.model.Session;
-import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.SessionRepository;
 
 import java.sql.PreparedStatement;
@@ -14,7 +13,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.github.polydome.journow.data.ResultSetUtil.parseSession;
+import static com.github.polydome.journow.data.repository.ResultSetUtil.parseSession;
 
 public class SessionRepositoryImpl implements SessionRepository {
     private final Database database;

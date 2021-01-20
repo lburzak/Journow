@@ -1,9 +1,9 @@
 package com.github.polydome.journow.di;
 
 import com.github.polydome.journow.data.Database;
-import com.github.polydome.journow.data.ProjectRepositoryImpl;
-import com.github.polydome.journow.data.SessionRepositoryImpl;
-import com.github.polydome.journow.data.TaskRepositoryImpl;
+import com.github.polydome.journow.data.repository.ProjectRepositoryImpl;
+import com.github.polydome.journow.data.repository.SessionRepositoryImpl;
+import com.github.polydome.journow.data.repository.TaskRepositoryImpl;
 import com.github.polydome.journow.data.event.DataEventBus;
 import com.github.polydome.journow.domain.model.TrackerData;
 import com.github.polydome.journow.domain.repository.ProjectRepository;

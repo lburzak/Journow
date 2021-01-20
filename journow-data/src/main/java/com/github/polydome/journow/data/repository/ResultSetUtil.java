@@ -1,4 +1,4 @@
-package com.github.polydome.journow.data;
+package com.github.polydome.journow.data.repository;
 
 import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.model.Session;

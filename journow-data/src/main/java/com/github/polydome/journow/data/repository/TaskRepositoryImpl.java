@@ -1,5 +1,6 @@
-package com.github.polydome.journow.data;
+package com.github.polydome.journow.data.repository;
 
+import com.github.polydome.journow.data.Database;
 import com.github.polydome.journow.data.event.DataEvent;
 import com.github.polydome.journow.data.event.DataEventBus;
 import com.github.polydome.journow.domain.exception.NoSuchTaskException;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.github.polydome.journow.data.ResultSetUtil.parseTask;
+import static com.github.polydome.journow.data.repository.ResultSetUtil.parseTask;
 
 public class TaskRepositoryImpl implements TaskRepository {
     private final Database database;

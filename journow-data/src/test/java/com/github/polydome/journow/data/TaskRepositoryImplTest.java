@@ -3,7 +3,7 @@ package com.github.polydome.journow.data;
 import com.github.polydome.journow.data.database.MemoryDatabase;
 import com.github.polydome.journow.data.event.DataEvent;
 import com.github.polydome.journow.data.event.DataEventBus;
-import com.github.polydome.journow.data.test.TaskFactory;
+import com.github.polydome.journow.data.repository.TaskRepositoryImpl;
 import com.github.polydome.journow.domain.exception.NoSuchTaskException;
 import com.github.polydome.journow.domain.model.Task;
 import org.junit.jupiter.api.Test;

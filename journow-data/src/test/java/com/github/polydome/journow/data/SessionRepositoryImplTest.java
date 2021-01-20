@@ -3,6 +3,7 @@ package com.github.polydome.journow.data;
 import com.github.polydome.journow.data.database.MemoryDatabase;
 import com.github.polydome.journow.data.event.DataEvent;
 import com.github.polydome.journow.data.event.DataEventBus;
+import com.github.polydome.journow.data.repository.SessionRepositoryImpl;
 import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.model.Session;
 import com.github.polydome.journow.domain.model.Task;
