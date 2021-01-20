@@ -8,7 +8,10 @@ import com.github.polydome.journow.ui.preview.PreviewModel;
 
 import javax.inject.Inject;
 import javax.swing.*;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -31,6 +34,10 @@ public class TaskListView extends JPanel {
                 }
             }
         });
+
+        for (int i = 0; i < tree.getRowCount(); i++) {
+            tree.expandRow(i);
+        }
 
         JScrollPane scrollPane = new JScrollPane(tree);
         setLayout(new BorderLayout());
