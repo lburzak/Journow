@@ -23,6 +23,7 @@ public class TaskRepositoryImpl implements TaskRepository {
     private PreparedStatement findAll;
     private PreparedStatement findOne;
     private PreparedStatement updateTask;
+    private PreparedStatement deleteTask;
 
     public TaskRepositoryImpl(Database database, DataEventBus dataEventBus) {
         this.database = database;
@@ -174,6 +175,27 @@ public class TaskRepositoryImpl implements TaskRepository {
         }
 
 
+    }
+
+    @Override
+    public void delete(Task task) {
+        if (!database.isReady())
+            throw new IllegalStateException("Database is not ready");
+
+        try {
+            if (!taskExists(task.getId()))
+                throw new NoSuchTaskException(task.getId());
+
+            if (deleteTask == null)
+                deleteTask = getConnection().prepareStatement("delete from task where task_id = ?");
+
+            deleteTask.setLong(1, task.getId());
+            deleteTask.execute();
+
+            dataEventBus.pushTaskEvent(DataEvent.deleteOne(task.getId()));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean taskExists(long id) throws SQLException {

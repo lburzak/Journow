@@ -31,6 +31,10 @@ public class DataEvent {
         return new DataEvent(Type.CHANGE, id, id);
     }
 
+    public static DataEvent deleteOne(long id) {
+        return new DataEvent(Type.REMOVE, id, id);
+    }
+
     public enum Type {
         INSERT,
         REMOVE,

@@ -11,4 +11,5 @@ public interface TaskRepository {
     void update(Task task);
     int count();
     List<Task> findAll();
+    void delete(Task task);
 }
