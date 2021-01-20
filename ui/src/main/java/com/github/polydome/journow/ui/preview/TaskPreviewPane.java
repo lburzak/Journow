@@ -53,9 +53,6 @@ public class TaskPreviewPane extends JPanel implements EntityEditorForm {
             if (obj instanceof Task) {
                 setTask((Task) obj);
             }
-            else {
-                throw new UnsupportedOperationException("Unsupported preview object");
-            }
         });
     }
 

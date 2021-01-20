@@ -23,6 +23,7 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     private PreparedStatement insertWithId;
     private PreparedStatement insertNew;
     private PreparedStatement findById;
+    private PreparedStatement update;
 
     public ProjectRepositoryImpl(Database database, DataEventBus dataEventBus) {
         this.database = database;
@@ -119,6 +120,25 @@ public class ProjectRepositoryImpl implements ProjectRepository {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public void update(Project project) {
+        if (!database.isReady())
+            throw new IllegalStateException("Database is not ready");
+
+        if (update == null) {
+            try {
+                update = getConnection().prepareStatement("update project set project_name = ? where project_id = ?");
+
+                update.setString(1, project.getName());
+                update.setLong(2, project.getId());
+
+                update.execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private Connection getConnection() throws SQLException {

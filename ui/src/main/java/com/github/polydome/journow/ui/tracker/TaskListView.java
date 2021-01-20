@@ -28,9 +28,11 @@ public class TaskListView extends JPanel {
             if (path != null) {
                 Object item = path.getLastPathComponent();
                 if (item instanceof DefaultMutableTreeNode) {
-                    if (((DefaultMutableTreeNode) item).getUserObject() instanceof Task) {
+                    Object obj = ((DefaultMutableTreeNode) item).getUserObject();
+                    if (obj instanceof Task)
                         previewModel.previewTask((Task) ((DefaultMutableTreeNode) item).getUserObject());
-                    }
+                    else if (obj instanceof Project)
+                        previewModel.previewProject(((Project) obj));
                 }
             }
         });

@@ -1,5 +1,6 @@
 package com.github.polydome.journow.ui.preview;
 
+import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.model.Task;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
@@ -14,5 +15,9 @@ public class PreviewModel {
 
     public void previewTask(Task task) {
         _previewObjects.onNext(task);
+    }
+
+    public void previewProject(Project project) {
+        _previewObjects.onNext(project);
     }
 }

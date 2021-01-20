@@ -7,4 +7,5 @@ import java.util.List;
 public interface ProjectRepository {
     List<Project> findAll();
     Project insert(Project project);
+    void update(Project project);
 }
