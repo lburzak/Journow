@@ -45,9 +45,10 @@ public class TaskTreeModel extends DefaultTreeModel {
             root.add(node);
         }
 
-        for (var task : orphanTasks) {
-            root.add(new DefaultMutableTreeNode(formatTask(task)));
-        }
+        if (orphanTasks != null)
+            for (var task : orphanTasks) {
+                root.add(new DefaultMutableTreeNode(formatTask(task)));
+            }
     }
 
     private String formatProject(Project project) {
