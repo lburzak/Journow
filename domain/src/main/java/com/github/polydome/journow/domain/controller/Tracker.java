@@ -30,6 +30,8 @@ public class Tracker {
         this.dataStorage = dataStorage;
         this.clock = clock;
         this.sessionRepository = sessionRepository;
+
+        refresh();
     }
 
     public void start(long taskId) {
@@ -83,5 +85,19 @@ public class Tracker {
                 emitter.onError(new TrackerNotRunningException());
             }
         });
+    }
+
+    private void refresh() {
+        Optional<TrackerData> maybeData = dataStorage.read();
+
+        if (maybeData.isPresent()) {
+            TrackerData data = maybeData.get();
+            Optional<Task> task = taskRepository.findById(data.getTaskId());
+
+            if (task.isPresent()) {
+                _currentTask.onNext(task.get());
+                _isRunning.onNext(true);
+            }
+        }
     }
 }

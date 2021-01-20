@@ -1,6 +1,7 @@
 package com.github.polydome.journow.di;
 
 import com.github.polydome.journow.data.Database;
+import com.github.polydome.journow.data.preferences.PreferencesTrackerDataStorage;
 import com.github.polydome.journow.data.repository.ProjectRepositoryImpl;
 import com.github.polydome.journow.data.repository.SessionRepositoryImpl;
 import com.github.polydome.journow.data.repository.TaskRepositoryImpl;
@@ -41,27 +42,7 @@ public class DomainModule {
 
     @Provides
     TrackerDataStorage trackerDataStorage() {
-        return new TrackerDataStorage() {
-            private TrackerData trackerData;
-
-            @Override
-            public void save(TrackerData data) {
-                trackerData = data;
-            }
-
-            @Override
-            public Optional<TrackerData> read() {
-                if (trackerData != null)
-                    return Optional.of(trackerData);
-                else
-                    return Optional.empty();
-            }
-
-            @Override
-            public void clear() {
-                trackerData = null;
-            }
-        };
+        return new PreferencesTrackerDataStorage();
     }
 
     @Provides
