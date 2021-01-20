@@ -1,10 +1,13 @@
 package com.github.polydome.journow.ui.listmodel;
 
+import com.github.polydome.journow.data.event.DataEvent;
 import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.TaskRepository;
+import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.util.HashMap;
@@ -14,11 +17,8 @@ import java.util.Map;
 
 public class TaskTreeModel extends DefaultTreeModel {
 
-    // A bit hacky way to retrieve selected item
-    private final Map<String, Object> labelItemMap = new HashMap<>();
-
     @Inject
-    public TaskTreeModel(TaskRepository taskRepository) {
+    public TaskTreeModel(TaskRepository taskRepository, @Named("TaskDataEvents") Observable<DataEvent> events) {
         super(new DefaultMutableTreeNode());
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) getRoot();
 
@@ -36,10 +36,10 @@ public class TaskTreeModel extends DefaultTreeModel {
         var orphanTasks = projectTaskMap.remove(null);
 
         for (var project : projectTaskMap.keySet()) {
-            DefaultMutableTreeNode node = new DefaultMutableTreeNode(formatProject(project));
+            DefaultMutableTreeNode node = new DefaultMutableTreeNode(project);
 
             for (var task : projectTaskMap.get(project)) {
-                node.add(new DefaultMutableTreeNode(formatTask(task)));
+                node.add(new DefaultMutableTreeNode(task));
             }
 
             root.add(node);
@@ -47,23 +47,7 @@ public class TaskTreeModel extends DefaultTreeModel {
 
         if (orphanTasks != null)
             for (var task : orphanTasks) {
-                root.add(new DefaultMutableTreeNode(formatTask(task)));
+                root.add(new DefaultMutableTreeNode(task));
             }
-    }
-
-    private String formatProject(Project project) {
-        String label = "<html><b><font color=#AAAAAA>#" + project.getId() +" <font color=#000000>" + project.getName() + "</html>";
-        labelItemMap.put(label, project);
-        return label;
-    }
-
-    private String formatTask(Task task) {
-        String label = "<html><font color=#AAAAAA>#" + task.getId() +" <font color=#000000>" + task.getTitle() + "</html>";
-        labelItemMap.put(label, task);
-        return label;
-    }
-
-    public Object getObjectByLabel(String label) {
-        return labelItemMap.get(label);
     }
 }

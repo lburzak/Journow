@@ -1,15 +1,14 @@
 package com.github.polydome.journow.ui.tracker;
 
+import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.model.Task;
-import com.github.polydome.journow.ui.listmodel.TaskListModel;
 import com.github.polydome.journow.ui.listmodel.TaskTreeModel;
 import com.github.polydome.journow.ui.popup.TaskPopupMenu;
 import com.github.polydome.journow.ui.preview.PreviewModel;
 
 import javax.inject.Inject;
 import javax.swing.*;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -17,16 +16,18 @@ import java.awt.event.MouseEvent;
 public class TaskListView extends JPanel {
     @Inject
     public TaskListView(TaskTreeModel model, TaskPopupMenu taskPopupMenu, PreviewModel previewModel) {
-        JTree tree = new JTree(model);
+        JTree tree = new TaskTree(model);
         tree.setRootVisible(false);
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         tree.addMouseListener(new TaskCellPopupListener(taskPopupMenu, model));
         tree.addTreeSelectionListener(ev -> {
             TreePath path = ev.getNewLeadSelectionPath();
             if (path != null) {
-                Object item = model.getObjectByLabel(path.getLastPathComponent().toString());
-                if (item instanceof Task) {
-                    previewModel.previewTask((Task) item);
+                Object item = path.getLastPathComponent();
+                if (item instanceof DefaultMutableTreeNode) {
+                    if (((DefaultMutableTreeNode) item).getUserObject() instanceof Task) {
+                        previewModel.previewTask((Task) ((DefaultMutableTreeNode) item).getUserObject());
+                    }
                 }
             }
         });
@@ -49,14 +50,50 @@ public class TaskListView extends JPanel {
         public void mousePressed(MouseEvent e) {
             if (SwingUtilities.isRightMouseButton(e)) {
                 JTree tree = (JTree) e.getSource();
-                TreePath tp = tree.getPathForLocation(e.getX(), e.getY());
-                if (tp != null) {
-                    Object selectedObj = model.getObjectByLabel(tp.getLastPathComponent().toString());
-                    if (selectedObj instanceof Task)
-                        popupMenu.show(e.getComponent(), e.getX(), e.getY(), (Task) selectedObj);
-                    tree.setSelectionPath(tp);
+                TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+                if (path != null) {
+                    Object item = path.getLastPathComponent();
+                    if (item instanceof DefaultMutableTreeNode) {
+                        if (((DefaultMutableTreeNode) item).getUserObject() instanceof Task)
+                            popupMenu.show(e.getComponent(), e.getX(), e.getY(), (Task) ((DefaultMutableTreeNode) item).getUserObject());
+
+                        tree.setSelectionPath(path);
+                    }
                 }
             }
+        }
+    }
+
+    private static class TaskTree extends JTree {
+        public TaskTree(TreeModel newModel) {
+            super(newModel);
+        }
+
+        @Override
+        public String convertValueToText(Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+            if (value instanceof DefaultMutableTreeNode)
+                value = formatObject(((DefaultMutableTreeNode) value).getUserObject());
+
+            return formatObject(value);
+        }
+
+        private String formatObject(Object object) {
+            if (object instanceof Task)
+                return formatTask((Task) object);
+            else if (object instanceof Project)
+                return formatProject((Project) object);
+            else if (object == null)
+                return "";
+            else
+                return object.toString();
+        }
+
+        private String formatProject(Project project) {
+            return "<html><b><font color=#AAAAAA>#" + project.getId() +" <font color=#000000>" + project.getName() + "</html>";
+        }
+
+        private String formatTask(Task task) {
+            return "<html><font color=#AAAAAA>#" + task.getId() +" <font color=#000000>" + task.getTitle() + "</html>";
         }
     }
 }
