@@ -35,9 +35,11 @@ public class TaskListView extends JPanel {
             }
         });
 
-        for (int i = 0; i < tree.getRowCount(); i++) {
-            tree.expandRow(i);
-        }
+        model.reloads().subscribe(e -> {
+            for (int i = 0; i < tree.getRowCount(); i++) {
+                tree.expandRow(i);
+            }
+        });
 
         JScrollPane scrollPane = new JScrollPane(tree);
         setLayout(new BorderLayout());

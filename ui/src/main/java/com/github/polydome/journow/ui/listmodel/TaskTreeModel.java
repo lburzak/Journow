@@ -5,6 +5,8 @@ import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.TaskRepository;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import io.reactivex.rxjava3.subjects.Subject;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -17,13 +19,32 @@ import java.util.Map;
 
 public class TaskTreeModel extends DefaultTreeModel {
 
+    private final TaskRepository taskRepository;
+
+    private final Subject<Boolean> _reloads = BehaviorSubject.create();
+
     @Inject
     public TaskTreeModel(TaskRepository taskRepository, @Named("TaskDataEvents") Observable<DataEvent> events) {
         super(new DefaultMutableTreeNode());
+        this.taskRepository = taskRepository;
+        populate();
+        _reloads.onNext(true);
+
+        events.subscribe(ev -> {
+            ((DefaultMutableTreeNode) getRoot()).removeAllChildren();
+            populate();
+            reload();
+            _reloads.onNext(true);
+        });
+    }
+
+    public Observable<Boolean> reloads() {
+        return _reloads.toSerialized();
+    }
+
+    private void populate() {
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) getRoot();
-
         Map<Project, List<Task>> projectTaskMap = new HashMap<>();
-
         List<Task> tasks = taskRepository.findAll();
 
         for (var task : tasks) {
@@ -45,9 +66,10 @@ public class TaskTreeModel extends DefaultTreeModel {
             root.add(node);
         }
 
-        if (orphanTasks != null)
+        if (orphanTasks != null) {
             for (var task : orphanTasks) {
                 root.add(new DefaultMutableTreeNode(task));
             }
+        }
     }
 }
