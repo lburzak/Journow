@@ -24,18 +24,14 @@ public class TaskTreeModel extends DefaultTreeModel {
     private final Subject<Boolean> _reloads = BehaviorSubject.create();
 
     @Inject
-    public TaskTreeModel(TaskRepository taskRepository, @Named("TaskDataEvents") Observable<DataEvent> events) {
+    public TaskTreeModel(TaskRepository taskRepository, @Named("TaskDataEvents") Observable<DataEvent> taskEvents, @Named("ProjectDataEvents") Observable<DataEvent> projectEvents) {
         super(new DefaultMutableTreeNode());
         this.taskRepository = taskRepository;
         populate();
         _reloads.onNext(true);
 
-        events.subscribe(ev -> {
-            ((DefaultMutableTreeNode) getRoot()).removeAllChildren();
-            populate();
-            reload();
-            _reloads.onNext(true);
-        });
+        taskEvents.subscribe(ev -> repopulate());
+        projectEvents.subscribe(ev -> repopulate());
     }
 
     public Observable<Boolean> reloads() {
@@ -71,5 +67,12 @@ public class TaskTreeModel extends DefaultTreeModel {
                 root.add(new DefaultMutableTreeNode(task));
             }
         }
+    }
+
+    private void repopulate() {
+        ((DefaultMutableTreeNode) getRoot()).removeAllChildren();
+        populate();
+        reload();
+        _reloads.onNext(true);
     }
 }

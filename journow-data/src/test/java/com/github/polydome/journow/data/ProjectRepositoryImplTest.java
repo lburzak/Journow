@@ -1,6 +1,7 @@
 package com.github.polydome.journow.data;
 
 import com.github.polydome.journow.data.database.MemoryDatabase;
+import com.github.polydome.journow.data.event.DataEventBus;
 import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.repository.ProjectRepository;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.verify;
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class ProjectRepositoryImplTest {
     Database database = new MemoryDatabase();
+    DataEventBus dataEventBus = mock(DataEventBus.class);
     ProjectRepository SUT = new ProjectRepositoryImpl(database, dataEventBus);
 
     @Test

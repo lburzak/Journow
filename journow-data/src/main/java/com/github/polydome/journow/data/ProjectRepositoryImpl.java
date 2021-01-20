@@ -134,7 +134,8 @@ public class ProjectRepositoryImpl implements ProjectRepository {
                 update.setString(1, project.getName());
                 update.setLong(2, project.getId());
 
-                update.execute();
+                if (update.executeUpdate() > 0)
+                    dataEventBus.pushProjectEvent(DataEvent.updateOne(project.getId()));
             } catch (SQLException e) {
                 e.printStackTrace();
             }
