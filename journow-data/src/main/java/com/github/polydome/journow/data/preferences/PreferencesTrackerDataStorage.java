@@ -1,13 +1,10 @@
 package com.github.polydome.journow.data.preferences;
 
-import com.github.polydome.journow.domain.controller.Tracker;
 import com.github.polydome.journow.domain.model.TrackerData;
 import com.github.polydome.journow.domain.service.TrackerDataStorage;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.Optional;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 public class PreferencesTrackerDataStorage implements TrackerDataStorage {
