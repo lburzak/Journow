@@ -25,7 +25,6 @@ public class ProjectPreviewPane extends JPanel implements EntityEditorForm {
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        constraints.insets = new Insets(10, 10, 10, 10);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.anchor = GridBagConstraints.CENTER;
 
@@ -36,6 +35,14 @@ public class ProjectPreviewPane extends JPanel implements EntityEditorForm {
         add(nameField, constraints);
 
         constraints.gridy = 1;
+        constraints.weightx = 1;
+        constraints.gridwidth = 2;
+        JSeparator separator = new JSeparator();
+        separator.setBorder(BorderFactory.createEmptyBorder(16, 0, 16, 0));
+        add(separator, constraints);
+
+        constraints.gridwidth = 1;
+        constraints.gridy = 2;
         constraints.weightx = 0.2;
         add(new JLabel("Total tracked time"), constraints);
 
