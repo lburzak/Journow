@@ -14,12 +14,9 @@ public class ListsPager extends JPanel {
         setLayout(new GridBagLayout());
         var constraints = new GridBagConstraints();
 
-        mainPane.addTab("Sessions", sessionListView);
         mainPane.addTab("Tasks", taskTab);
+        mainPane.addTab("Sessions", sessionListView);
 
-        constraints.ipadx = 10;
-        constraints.ipady = 10;
-        constraints.insets = new Insets(10, 10, 0, 10);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1;
         constraints.weighty = 1;
