@@ -1,13 +1,23 @@
 # Journow
 
 ## Building
-This repository does not include Gradle wrapper files.
-Before attempting to build the project, please generate a Gradle wrapper:
-```
-gradle :wrapper
-```
+Building 
+JDK 11 or newer is required to properly build the application.
 
-Then, continue to operate using a wrapper e.g.:
+Complete build can be issued with:
 ```
 ./gradlew build
+```
+
+## Running
+JRE 11 or newer is required to properly run the application.
+
+The easiest way to run Journow is to use `run` task:
+```
+./gradlew run
+```
+
+Otherwise, the application can be packed into a single .jar file with:
+```
+./gradlew uberJar
 ```
