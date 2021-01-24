@@ -2,7 +2,6 @@ package com.github.polydome.journow.ui.dialog;
 
 import com.github.lgooddatepicker.components.DateTimePicker;
 import com.github.polydome.journow.domain.model.Project;
-import com.github.polydome.journow.domain.model.Session;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.ProjectRepository;
 import com.github.polydome.journow.domain.repository.TaskRepository;
@@ -14,6 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.Optional;
 
 public class LogDialog extends JDialog {
     private final ProjectRepository projectRepository;
@@ -25,12 +25,15 @@ public class LogDialog extends JDialog {
     private final DateTimePicker startDatePicker = new DateTimePicker();
     private final DateTimePicker endDatePicker = new DateTimePicker();
 
+    private Optional<Task> lockedTask = Optional.empty();
+
     public LogDialog(ProjectRepository projectRepository,
                      TaskRepository taskRepository,
                      LogSessionUseCase logSessionUseCase,
                      ProjectListModel projectListModel,
                      Task task) {
         this(projectRepository, taskRepository, logSessionUseCase, projectListModel);
+        lockedTask = Optional.of(task);
 
         titleField.setText(task.getTitle());
         titleField.setEnabled(false);
@@ -100,7 +103,11 @@ public class LogDialog extends JDialog {
         if (projectField.hasCustomProject())
             project = projectRepository.insert(project);
 
-        Task task = taskRepository.insert(new Task(0, titleField.getText(), project));
+        Task task;
+        if (lockedTask.isPresent())
+            task = lockedTask.get();
+        else
+            task = taskRepository.insert(new Task(0, titleField.getText(), project));
 
         logSessionUseCase.execute(
                 getDateTimeInstant(startDatePicker),
