@@ -14,6 +14,7 @@ public class ProjectSelector extends JComboBox<String> {
         this.model = model;
         setModel(model);
         setEditable(true);
+        setToolTipText("Project name");
     }
 
     public boolean hasCustomProject() {
