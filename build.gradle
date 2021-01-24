@@ -6,7 +6,7 @@ subprojects {
     apply plugin: 'java'
 
     group 'com.github.polydome.journow'
-    version '1.0-SNAPSHOT'
+    version '0.1'
 
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
