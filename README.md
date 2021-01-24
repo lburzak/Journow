@@ -1,10 +1,9 @@
-# Journow
+# JourNow
 
 ## Building
-Building 
 JDK 11 or newer is required to properly build the application.
 
-Complete build can be issued with:
+A complete build can be issued with:
 ```
 ./gradlew build
 ```
@@ -12,7 +11,7 @@ Complete build can be issued with:
 ## Running
 JRE 11 or newer is required to properly run the application.
 
-The easiest way to run Journow is to use `run` task:
+The easiest way to run JourNow is to use `run` task:
 ```
 ./gradlew run
 ```
