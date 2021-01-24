@@ -3,6 +3,7 @@ package com.github.polydome.journow.data.repository;
 import com.github.polydome.journow.data.Database;
 import com.github.polydome.journow.data.event.DataEvent;
 import com.github.polydome.journow.data.event.DataEventBus;
+import com.github.polydome.journow.domain.exception.NoSuchTaskException;
 import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.repository.ProjectRepository;
 
@@ -25,6 +26,8 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     private PreparedStatement insertNew;
     private PreparedStatement findById;
     private PreparedStatement update;
+    private PreparedStatement findTrackedTime;
+    private PreparedStatement findOne;
 
     public ProjectRepositoryImpl(Database database, DataEventBus dataEventBus) {
         this.database = database;
@@ -140,6 +143,47 @@ public class ProjectRepositoryImpl implements ProjectRepository {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    public long findTotalTrackedMilliseconds(long projectId) {
+        if (!database.isReady())
+            throw new IllegalStateException("Database is not ready");
+
+        try {
+            if (!projectExists(projectId))
+                throw new NoSuchTaskException(projectId);
+
+            if (findTrackedTime == null)
+                findTrackedTime = getConnection().prepareStatement("select sum(end_date - start_date)\n" +
+                        "from session\n" +
+                        "         inner join task t on session.task_id = t.task_id\n" +
+                        "         " +
+                        "     inner join project p on t.project_id = p.project_id\n" +
+                        "where p.project_id = ?");
+
+            findTrackedTime.setLong(1, projectId);
+
+            try (var rs = findTrackedTime.executeQuery()) {
+                if (rs.next())
+                    return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    private boolean projectExists(long projectId) throws SQLException {
+        if (findOne == null)
+            findOne = getConnection().prepareStatement("select * from project where project_id = ?");
+
+        findOne.setLong(1, projectId);
+
+        try (var rs = findOne.executeQuery()) {
+            return rs.next();
         }
     }
 
