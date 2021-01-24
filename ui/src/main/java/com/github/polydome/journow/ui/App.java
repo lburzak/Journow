@@ -1,5 +1,8 @@
 package com.github.polydome.journow.ui;
 
+import com.alee.laf.WebLookAndFeel;
+import com.alee.skin.dark.WebDarkSkin;
+import com.alee.skin.light.WebLightSkin;
 import com.github.polydome.journow.di.ApplicationComponent;
 
 import javax.swing.*;
@@ -17,11 +20,13 @@ public class App {
         // Enable Anti-aliasing
         System.setProperty("awt.useSystemAAFontSettings", "lcd");
 
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
-        }
+        WebLookAndFeel.install ( WebLightSkin.class );
+
+//        try {
+//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+//            e.printStackTrace();
+//        }
 
         applicationComponent.createPresentationComponent()
                 .trackerWindow()
