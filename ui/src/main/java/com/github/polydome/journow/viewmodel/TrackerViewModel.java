@@ -44,7 +44,7 @@ public class TrackerViewModel {
     }
 
     public void startSession(String title, Project project, boolean isNewProject) {
-        if (isNewProject)
+        if (project != null && isNewProject)
             project = projectRepository.insert(project);
 
         Task task = taskRepository.insert(new Task(0, title, project));
