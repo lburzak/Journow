@@ -76,7 +76,7 @@ public class TaskPreviewPane extends JPanel implements EntityEditorForm {
         else
             projectSelector.setSelectedItem(project.getName());
 
-        long totalDurationMillis = taskRepository.findTotalTrackedTimeById(previewedTaskId);
+        long totalDurationMillis = taskRepository.findTotalTrackedMillis(previewedTaskId);
         totalTrackedTimeField.setText(FormatUtils.millisToReadableDuration(totalDurationMillis));
     }
 

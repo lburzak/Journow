@@ -12,5 +12,5 @@ public interface TaskRepository {
     int count();
     List<Task> findAll();
     void delete(Task task);
-    long findTotalTrackedTimeById(long taskId);
+    long findTotalTrackedMillis(long taskId);
 }

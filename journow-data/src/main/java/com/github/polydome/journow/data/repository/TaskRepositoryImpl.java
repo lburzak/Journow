@@ -201,7 +201,7 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
-    public long findTotalTrackedTimeById(long taskId) {
+    public long findTotalTrackedMillis(long taskId) {
         if (!database.isReady())
             throw new IllegalStateException("Database is not ready");
 
