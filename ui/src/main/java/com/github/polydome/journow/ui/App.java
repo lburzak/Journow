@@ -20,13 +20,7 @@ public class App {
         // Enable Anti-aliasing
         System.setProperty("awt.useSystemAAFontSettings", "lcd");
 
-        WebLookAndFeel.install ( WebLightSkin.class );
-
-//        try {
-//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-//            e.printStackTrace();
-//        }
+        WebLookAndFeel.install();
 
         applicationComponent.createPresentationComponent()
                 .trackerWindow()
