@@ -10,8 +10,24 @@ public class TrackerWindow extends JFrame {
     @Inject
     public TrackerWindow(ListsPager listsPager, TrackerBar trackerBar) {
         createWindow();
-        getContentPane().add(trackerBar, BorderLayout.PAGE_END);
-        getContentPane().add(listsPager, BorderLayout.CENTER);
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8));
+
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.PAGE_AXIS));
+
+        JSeparator separator = new JSeparator();
+        separator.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
+
+        bottomPanel.add(separator);
+        bottomPanel.add(trackerBar);
+
+        mainPanel.add(listsPager, BorderLayout.CENTER);
+        mainPanel.add(bottomPanel, BorderLayout.PAGE_END);
+
+        add(mainPanel);
 
         trackerBar.onCreate();
     }
