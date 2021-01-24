@@ -18,7 +18,7 @@ import java.util.Locale;
 public class SessionTableModel extends AbstractTableModel {
     private final List<Session> sessions;
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter
-            .ofPattern("dd-MM-yyyy hh:mm")
+            .ofPattern("dd-MM-yyyy HH:mm")
             .withLocale( Locale.getDefault() )
             .withZone( ZoneId.systemDefault() );
 
