@@ -1,5 +1,6 @@
 package com.github.polydome.journow.ui.preview;
 
+import com.github.polydome.journow.common.FormatUtils;
 import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.repository.ProjectRepository;
 
@@ -51,7 +52,9 @@ public class ProjectPreviewPane extends JPanel implements EntityEditorForm {
     public void setProject(Project project) {
         previewedProjectId = project.getId();
         nameField.setText(project.getName());
-        timeTrackedField.setText("00:00:00");
+
+        long totalDurationMillis = projectRepository.findTotalTrackedMillis(project.getId());
+        timeTrackedField.setText(FormatUtils.millisToReadableDuration(totalDurationMillis));
     }
 
     @Override

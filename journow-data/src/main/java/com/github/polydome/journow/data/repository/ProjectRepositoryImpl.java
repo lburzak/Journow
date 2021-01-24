@@ -147,7 +147,7 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     }
 
     @Override
-    public long findTotalTrackedMilliseconds(long projectId) {
+    public long findTotalTrackedMillis(long projectId) {
         if (!database.isReady())
             throw new IllegalStateException("Database is not ready");
 

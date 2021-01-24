@@ -11,7 +11,6 @@ import com.github.polydome.journow.ui.listmodel.ProjectListModel;
 import javax.inject.Inject;
 import javax.swing.*;
 import java.awt.*;
-import java.time.Duration;
 
 public class TaskPreviewPane extends JPanel implements EntityEditorForm {
     private final JTextField titleField = new JTextField();
