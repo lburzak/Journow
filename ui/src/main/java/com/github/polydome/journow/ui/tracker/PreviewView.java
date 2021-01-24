@@ -17,6 +17,8 @@ public class PreviewView extends JPanel {
     @Inject
     public PreviewView(TaskPreviewPane taskPreviewPane, ProjectPreviewPane projectPreviewPane, PreviewModel previewModel) {
         setLayout(new BorderLayout());
+        setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
+
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
@@ -30,7 +32,10 @@ public class PreviewView extends JPanel {
         saveButton.addActionListener(a -> {
             currentForm.submit();
         });
+
+        saveButton.setVisible(false);
         bottomPanel.add(saveButton, c);
+
         add(bottomPanel, BorderLayout.PAGE_END);
 
         previewModel.previewObjects().subscribe(obj -> {
@@ -47,6 +52,7 @@ public class PreviewView extends JPanel {
                 projectPreviewPane.setVisible(true);
                 currentForm = projectPreviewPane;
             }
+            saveButton.setVisible(true);
         });
     }
 }
