@@ -34,7 +34,7 @@ public class TrackerBar extends JPanel {
 
         setLayout(new GridBagLayout());
 
-        elapsedTimeCounter.setFont(new Font("Roboto", Font.PLAIN, 24));
+        elapsedTimeCounter.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         stopTrackerButton.addActionListener(a -> viewModel.endSession());
         startTrackerButton.addActionListener(a -> viewModel
                 .startSession(taskTitleInput.getText(),
@@ -68,12 +68,13 @@ public class TrackerBar extends JPanel {
 
     private void inflateLayout() {
         GridBagConstraints constraints = new GridBagConstraints();
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.CENTER;
         constraints.weightx = 0.1;
         add(elapsedTimeCounter, constraints);
 
         constraints.weightx = 0.8;
         add(taskTitleLabel, constraints);
+        constraints.fill = GridBagConstraints.BOTH;
         add(taskTitleInput, constraints);
         constraints.gridy = 1;
         add(projectSelector, constraints);

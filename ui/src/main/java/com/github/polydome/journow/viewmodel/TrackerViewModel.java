@@ -40,7 +40,13 @@ public class TrackerViewModel {
     }
 
     public Observable<String> getTaskTitle() {
-        return tracker.currentTask().map(Task::getTitle);
+        return tracker.currentTask().map(task -> {
+            if (task.getProject() != null)
+                return String.format("<html><center>%s<br><i>%s</i></center></html>", task.getTitle(), task.getProject().getName());
+            else {
+                return task.getTitle();
+            }
+        });
     }
 
     public void startSession(String title, Project project, boolean isNewProject) {
