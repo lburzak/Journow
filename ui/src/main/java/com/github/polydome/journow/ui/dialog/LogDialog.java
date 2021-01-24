@@ -38,7 +38,8 @@ public class LogDialog extends JDialog {
         titleField.setText(task.getTitle());
         titleField.setEnabled(false);
 
-        projectField.setSelectedItem(task.getProject().getName());
+        if (task.getProject() != null)
+            projectField.setSelectedItem(task.getProject().getName());
         projectField.setEnabled(false);
     }
 
@@ -102,7 +103,7 @@ public class LogDialog extends JDialog {
 
     private void submit() {
         Project project = projectField.getSelectedProject();
-        if (projectField.hasCustomProject())
+        if (projectField.hasCustomProject() && project != null)
             project = projectRepository.insert(project);
 
         Task task;
