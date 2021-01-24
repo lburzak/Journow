@@ -1,14 +1,12 @@
 package com.github.polydome.journow.ui.tracker;
 
-import com.github.polydome.journow.domain.model.Project;
+import com.alee.laf.text.WebTextField;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.ui.control.ProjectSelector;
-import com.github.polydome.journow.ui.dialog.LogDialog;
 import com.github.polydome.journow.ui.dialog.LogDialogFactory;
 import com.github.polydome.journow.viewmodel.TrackerViewModel;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -21,7 +19,7 @@ public class TrackerBar extends JPanel {
 
     private final JLabel elapsedTimeCounter = new JLabel();
     private final JLabel taskTitleLabel = new JLabel();
-    private final JTextField taskTitleInput = new JTextField();
+    private final WebTextField taskTitleInput = new WebTextField();
     private final JButton stopTrackerButton = new JButton("Stop");
     private final JButton startTrackerButton = new JButton("Start");
     private final JButton logButton = new JButton("Log");
@@ -32,6 +30,7 @@ public class TrackerBar extends JPanel {
         this.viewModel = viewModel;
         this.projectSelector = projectSelector;
         this.logDialogFactory = logDialogFactory;
+        taskTitleInput.setInputPrompt("Task name");
 
         setLayout(new GridBagLayout());
 
@@ -70,7 +69,6 @@ public class TrackerBar extends JPanel {
     private void inflateLayout() {
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.insets = new Insets(0, 10, 0, 0);
         constraints.weightx = 0.1;
         add(elapsedTimeCounter, constraints);
 
@@ -80,7 +78,6 @@ public class TrackerBar extends JPanel {
         constraints.gridy = 1;
         add(projectSelector, constraints);
 
-        constraints.insets = new Insets(0, 10, 0, 10);
         constraints.gridy = 0;
         constraints.weightx = 0.1;
         add(stopTrackerButton, constraints);
