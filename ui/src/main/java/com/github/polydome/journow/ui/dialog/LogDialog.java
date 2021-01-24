@@ -56,36 +56,37 @@ public class LogDialog extends JDialog {
 
         setSize(800, 100);
 
-        setLayout(new GridBagLayout());
+        JPanel pane = new JPanel();
+        pane.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        pane.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(10, 10, 10, 10);
         c.fill = GridBagConstraints.HORIZONTAL;
 
         c.weightx = 0.3;
         c.gridy = 0;
-        add(new JLabel("Task title"), c);
+        pane.add(new JLabel("Task title"), c);
         c.gridy++;
-        add(new JLabel("Project"), c);
+        pane.add(new JLabel("Project"), c);
         c.gridy++;
-        add(new JLabel("Start date"), c);
+        pane.add(new JLabel("Start date"), c);
         c.gridy++;
-        add(new JLabel("End date"), c);
+        pane.add(new JLabel("End date"), c);
 
         c.weightx = 0.7;
         c.gridy = 0;
         c.gridx = 1;
-        add(titleField, c);
+        pane.add(titleField, c);
         c.gridy++;
-        add(projectField, c);
+        pane.add(projectField, c);
         c.gridy++;
-        add(startDatePicker, c);
+        pane.add(startDatePicker, c);
         c.gridy++;
-        add(endDatePicker, c);
+        pane.add(endDatePicker, c);
 
         c.weightx = 0.3;
         c.gridy++;
         JButton submitButton = new JButton("Save");
-        add(submitButton, c);
+        pane.add(submitButton, c);
         submitButton.addActionListener(a -> submit());
 
         startDatePicker.getDatePicker().setDateToToday();
@@ -93,6 +94,7 @@ public class LogDialog extends JDialog {
         endDatePicker.getDatePicker().setDateToToday();
         endDatePicker.getTimePicker().setTimeToNow();
 
+        add(pane);
         pack();
 
         setVisible(true);
