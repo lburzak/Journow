@@ -1,6 +1,4 @@
 rootProject.name = 'JourNow'
 include 'journow-domain'
-include 'time-date-parser'
 include 'journow-ui'
 include 'journow-data'
-
