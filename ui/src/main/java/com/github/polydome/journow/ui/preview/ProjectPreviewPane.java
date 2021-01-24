@@ -9,6 +9,7 @@ import java.awt.*;
 
 public class ProjectPreviewPane extends JPanel implements EntityEditorForm {
     private final JTextField nameField = new JTextField();
+    private final JLabel timeTrackedField = new JLabel();
     private final ProjectRepository projectRepository;
 
     private long previewedProjectId = -1;
@@ -33,6 +34,13 @@ public class ProjectPreviewPane extends JPanel implements EntityEditorForm {
         constraints.weightx = 0.8;
         add(nameField, constraints);
 
+        constraints.gridy = 1;
+        constraints.weightx = 0.2;
+        add(new JLabel("Total tracked time"), constraints);
+
+        constraints.weightx = 0.8;
+        add(timeTrackedField, constraints);
+
         model.previewObjects().subscribe(obj -> {
             if (obj instanceof Project) {
                 setProject((Project) obj);
@@ -43,6 +51,7 @@ public class ProjectPreviewPane extends JPanel implements EntityEditorForm {
     public void setProject(Project project) {
         previewedProjectId = project.getId();
         nameField.setText(project.getName());
+        timeTrackedField.setText("00:00:00");
     }
 
     @Override
