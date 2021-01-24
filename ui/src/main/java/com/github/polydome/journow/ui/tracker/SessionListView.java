@@ -22,6 +22,8 @@ public class SessionListView extends JPanel {
         constraints.weighty = 1;
         JTable table = new JTable(model);
 
+        table.setRowHeight(30);
+
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
