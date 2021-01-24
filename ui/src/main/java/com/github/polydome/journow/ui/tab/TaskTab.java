@@ -7,11 +7,10 @@ import javax.inject.Inject;
 import javax.swing.*;
 import java.awt.*;
 
-public class TaskTab extends JPanel {
+public class TaskTab extends JSplitPane {
     @Inject
     public TaskTab(TaskListView taskListView, PreviewView previewView) {
-        setLayout(new BorderLayout());
-        add(taskListView, BorderLayout.LINE_START);
-        add(previewView, BorderLayout.CENTER);
+        setLeftComponent(taskListView);
+        setRightComponent(previewView);
     }
 }
