@@ -10,7 +10,7 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 
 public class SessionListView extends JPanel {
-    private static final int[] COLUMN_WIDTHS = {100, 100, 20, 500};
+    private static final int[] COLUMN_WIDTHS = {100, 100, 20, 300};
 
     @Inject
     public SessionListView(SessionTableModel model) {
