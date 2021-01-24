@@ -26,6 +26,7 @@ public class TaskPreviewPane extends JPanel implements EntityEditorForm {
         this.projectRepository = projectRepository;
         JLabel titleLabel = new JLabel("Title");
         JLabel projectLabel = new JLabel("Project");
+        JLabel totalTracked = new JLabel("Total tracked time");
 
         GridBagLayout layout = new GridBagLayout();
         setLayout(layout);
@@ -48,6 +49,13 @@ public class TaskPreviewPane extends JPanel implements EntityEditorForm {
 
         constraints.weightx = 0.8;
         add(projectSelector, constraints);
+
+        constraints.gridy = 2;
+        constraints.weightx = 0.2;
+        add(totalTracked, constraints);
+
+        constraints.weightx = 0.8;
+        add(new JLabel("00:00:00"), constraints);
 
         model.previewObjects().subscribe(obj -> {
             if (obj instanceof Task) {
