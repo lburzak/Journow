@@ -1,5 +1,6 @@
 package com.github.polydome.journow.ui.preview;
 
+import com.github.polydome.journow.common.FormatUtils;
 import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.ProjectRepository;
@@ -10,9 +11,11 @@ import com.github.polydome.journow.ui.listmodel.ProjectListModel;
 import javax.inject.Inject;
 import javax.swing.*;
 import java.awt.*;
+import java.time.Duration;
 
 public class TaskPreviewPane extends JPanel implements EntityEditorForm {
     private final JTextField titleField = new JTextField();
+    private final JLabel totalTrackedTimeField = new JLabel();
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
     private final ProjectSelector projectSelector;
@@ -55,7 +58,7 @@ public class TaskPreviewPane extends JPanel implements EntityEditorForm {
         add(totalTracked, constraints);
 
         constraints.weightx = 0.8;
-        add(new JLabel("00:00:00"), constraints);
+        add(totalTrackedTimeField, constraints);
 
         model.previewObjects().subscribe(obj -> {
             if (obj instanceof Task) {
@@ -67,11 +70,15 @@ public class TaskPreviewPane extends JPanel implements EntityEditorForm {
     public void setTask(Task task) {
         previewedTaskId = task.getId();
         titleField.setText(task.getTitle());
+
         Project project = task.getProject();
         if (project == null)
             projectSelector.setSelectedIndex(0);
         else
             projectSelector.setSelectedItem(project.getName());
+
+        long totalDurationMillis = taskRepository.findTotalTrackedTimeById(previewedTaskId);
+        totalTrackedTimeField.setText(FormatUtils.millisToReadableDuration(totalDurationMillis));
     }
 
     @Override

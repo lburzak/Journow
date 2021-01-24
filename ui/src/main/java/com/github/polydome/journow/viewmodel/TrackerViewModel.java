@@ -5,12 +5,11 @@ import com.github.polydome.journow.domain.model.Project;
 import com.github.polydome.journow.domain.model.Task;
 import com.github.polydome.journow.domain.repository.ProjectRepository;
 import com.github.polydome.journow.domain.repository.TaskRepository;
-import com.github.polydome.journow.ui.tracker.common.FormatUtils;
+import com.github.polydome.journow.common.FormatUtils;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.time.Duration;
 
 public class TrackerViewModel {
 
@@ -37,16 +36,11 @@ public class TrackerViewModel {
                 return tracker.timeElapsed(updateInterval);
             else
                 return Observable.just(0L);
-        }).map(this::millisToReadableDuration);
+        }).map(FormatUtils::millisToReadableDuration);
     }
 
     public Observable<String> getTaskTitle() {
         return tracker.currentTask().map(Task::getTitle);
-    }
-
-    public String millisToReadableDuration(long millis) {
-        Duration duration = Duration.ofMillis(millis);
-        return FormatUtils.formatDuration(duration);
     }
 
     public void startSession(String title, Project project, boolean isNewProject) {

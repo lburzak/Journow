@@ -3,7 +3,7 @@ package com.github.polydome.journow.ui.listmodel;
 import com.github.polydome.journow.data.event.DataEvent;
 import com.github.polydome.journow.domain.model.Session;
 import com.github.polydome.journow.domain.repository.SessionRepository;
-import com.github.polydome.journow.ui.tracker.common.FormatUtils;
+import com.github.polydome.journow.common.FormatUtils;
 import io.reactivex.rxjava3.core.Observable;
 
 import javax.inject.Inject;

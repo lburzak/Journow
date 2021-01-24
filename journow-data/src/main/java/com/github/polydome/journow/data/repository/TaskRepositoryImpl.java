@@ -25,6 +25,7 @@ public class TaskRepositoryImpl implements TaskRepository {
     private PreparedStatement findOne;
     private PreparedStatement updateTask;
     private PreparedStatement deleteTask;
+    private PreparedStatement findTrackedTime;
 
     public TaskRepositoryImpl(Database database, DataEventBus dataEventBus) {
         this.database = database;
@@ -197,6 +198,31 @@ public class TaskRepositoryImpl implements TaskRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public long findTotalTrackedTimeById(long taskId) {
+        if (!database.isReady())
+            throw new IllegalStateException("Database is not ready");
+
+        try {
+            if (!taskExists(taskId))
+                throw new NoSuchTaskException(taskId);
+
+            if (findTrackedTime == null)
+                findTrackedTime = getConnection().prepareStatement("select sum(end_date - start_date) from session where task_id = ?");
+
+            findTrackedTime.setLong(1, taskId);
+
+            try (var rs = findTrackedTime.executeQuery()) {
+                if (rs.next())
+                    return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 
     private boolean taskExists(long id) throws SQLException {
