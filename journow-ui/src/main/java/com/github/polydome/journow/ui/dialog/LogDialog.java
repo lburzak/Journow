@@ -107,7 +107,7 @@ public class LogDialog extends JDialog {
             project = projectRepository.insert(project);
 
         Task task;
-        if (lockedTask.isPresent())
+        if (lockedTask.isPresent() && lockedTask.get().getId() > 0)
             task = lockedTask.get();
         else
             task = taskRepository.insert(new Task(0, titleField.getText(), project));
