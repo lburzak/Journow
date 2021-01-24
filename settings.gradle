@@ -1,6 +1,6 @@
-rootProject.name = 'JournowDesktop'
-include ':domain'
+rootProject.name = 'JourNow'
+include 'journow-domain'
 include 'time-date-parser'
-include 'ui'
+include 'journow-ui'
 include 'journow-data'
 

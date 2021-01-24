@@ -16,7 +16,7 @@ test {
 }
 
 dependencies {
-    implementation project(':domain')
+    implementation project(':journow-domain')
 
     implementation group: 'org.xerial', name: 'sqlite-jdbc', version: '3.34.0'
 

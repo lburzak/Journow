@@ -11,7 +11,7 @@ dependencies {
     def daggerVersion = '2.30.1'
 
     implementation project(':journow-data')
-    implementation project(':domain')
+    implementation project(':journow-domain')
 
     implementation 'com.github.lgooddatepicker:LGoodDatePicker:11.1.0'
     implementation 'com.weblookandfeel:weblaf-core:1.2.13'
