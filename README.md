@@ -20,3 +20,4 @@ Otherwise, the application can be packed into a single .jar file with:
 ```
 gradlew uberJar
 ```
+Then, it can be found in `journow-ui/build/libs/journow-ui-<version>-uber.jar`
