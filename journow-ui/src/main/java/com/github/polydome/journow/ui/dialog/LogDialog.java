@@ -90,8 +90,10 @@ public class LogDialog extends JDialog {
         pane.add(submitButton, c);
         submitButton.addActionListener(a -> submit());
 
+        startDatePicker.getTimePicker().getSettings().setFormatForDisplayTime("HH:mm");
         startDatePicker.getDatePicker().setDateToToday();
         startDatePicker.getTimePicker().setTimeToNow();
+        endDatePicker.getTimePicker().getSettings().setFormatForDisplayTime("HH:mm");
         endDatePicker.getDatePicker().setDateToToday();
         endDatePicker.getTimePicker().setTimeToNow();
 
