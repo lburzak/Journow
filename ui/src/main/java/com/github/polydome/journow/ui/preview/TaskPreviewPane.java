@@ -35,7 +35,6 @@ public class TaskPreviewPane extends JPanel implements EntityEditorForm {
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        constraints.insets = new Insets(10, 10, 10, 10);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.anchor = GridBagConstraints.CENTER;
 
@@ -53,6 +52,14 @@ public class TaskPreviewPane extends JPanel implements EntityEditorForm {
         add(projectSelector, constraints);
 
         constraints.gridy = 2;
+        constraints.weightx = 1;
+        constraints.gridwidth = 2;
+        JSeparator separator = new JSeparator();
+        separator.setBorder(BorderFactory.createEmptyBorder(16, 0, 16, 0));
+        add(separator, constraints);
+
+        constraints.gridwidth = 1;
+        constraints.gridy = 3;
         constraints.weightx = 0.2;
         add(totalTracked, constraints);
 
