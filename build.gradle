@@ -1,3 +1,13 @@
 wrapper {
     gradleVersion = '6.7'
 }
+
+subprojects {
+    apply plugin: 'java'
+
+    group 'com.github.polydome.journow'
+    version '1.0-SNAPSHOT'
+
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
