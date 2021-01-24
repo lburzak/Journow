@@ -10,6 +10,7 @@ import java.awt.*;
 public class TaskTab extends JSplitPane {
     @Inject
     public TaskTab(TaskListView taskListView, PreviewView previewView) {
+        taskListView.setPreferredSize(new Dimension(300, 200));
         setLeftComponent(taskListView);
         setRightComponent(previewView);
     }
